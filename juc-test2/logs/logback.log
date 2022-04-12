@@ -1,0 +1,4 @@
+2022-04-10 20:16:09.150 [main] DEBUG singletonPractice Line:15  - test
+2022-04-10 20:16:09.154 [main] ERROR singletonPractice Line:16  - test
+2022-04-10 20:16:29.282 [main] DEBUG singletonPractice Line:15  - test
+2022-04-10 20:16:29.287 [main] ERROR singletonPractice Line:16  - test

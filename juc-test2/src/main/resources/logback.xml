@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--        根节点configuration，有以下属性
+        a. scan,当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。
+        b. scanPeriod,设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。
+        c. debug,当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。-->
+<configuration scan="true"
+               scanPeriod="10 seconds">
+    <!--    contextName ，设置日志上下文名称，可以通过%contextName来打印日志上下文名称-->
+    <contextName>juctest</contextName>
+    <!--    property可以用来设置变量，可以通过${name}来访问，有以下的属性
+        a. name，用于${name}访问的key
+        b. value，用于${name}访问的value
+        c. file ，用于指定配置文件的路径，他的作用在于，如果你有多个配置信息的话，可以直接写在配置文件中，然后通过file引入，如
+        <property file="src/main/java/chapters/configuration/variables.properties" />-->
+    <property name="path" value="Y:logs\\logback.log"/>
+    <property name="path2" value="Y:logs\\logback.log"/>
+    <property name="path3" value="Y:logs\\logback.log"/>
+    <!--    appender格式化日志输出节点，有俩个属性name和class，class用来指定哪种输出策略，常用就是控制台输出策略和文件输出策略。appender有以下子节点：-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--encoder 默认配置为PatternLayoutEncoder-->
+        <!--        encoder和pattern节点组合用于具体输出的日志格式-->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} Line:%-3L - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <!--        filter，日志输出拦截器，可以自定义拦截器也可以用系统一些定义好的拦截器-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>debug</level>
+        </filter>
+    </appender>
+
+    <appender name="DEBUG" class="ch.qos.logback.core.FileAppender">
+        <!--        file节点用来指明日志文件的输出位置，可以是绝对路径也可以是相对路径-->
+        <file>${path}</file>
+        <!--encoder 默认配置为PatternLayoutEncoder-->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} Line:%-3L - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>debug</level>
+        </filter>
+    </appender>
+
+    <!--    <appender name="rollingByTime"-->
+    <!--              class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+    <!--        <file>${path2}</file>-->
+    <!--        &lt;!&ndash;        rollingPolicy日志回滚策略，在这里我们用了TimeBasedRollingPolicy，基于时间的回滚策略,有以下子节点-->
+    <!--                fileNamePattern，必要节点，可以用来设置指定时间的日志归档，例如我们上面的例子是每天将日志归档成一个zip包-->
+    <!--                maxHistory ,可选节点，控制保留的归档文件的最大数量，超出数量就删除旧文件,，例如设置为30的话，则30天之后，旧的日志就会被删除-->
+    <!--                totalSizeCap，可选节点，用来指定日志文件的上限大小，例如设置为3GB的话，那么到了这个值，就会删除旧的日志&ndash;&gt;-->
+    <!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+    <!--            <fileNamePattern>${path2}.%d{yyyy-MM-dd}.zip</fileNamePattern>-->
+    <!--        </rollingPolicy>-->
+
+    <!--        <encoder>-->
+    <!--            <pattern>%date %level [%thread] %logger{36} [%file : %line] %msg%n-->
+    <!--            </pattern>-->
+    <!--        </encoder>-->
+    <!--    </appender>-->
+
+    <!--    <appender name="rollingBySize" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+    <!--        <file>${path3}</file>-->
+    <!--        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">-->
+    <!--            &lt;!&ndash; 每天一归档 &ndash;&gt;-->
+    <!--            <fileNamePattern>mylog-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>-->
+    <!--            &lt;!&ndash; 单个日志文件最多 100MB, 60天的日志周期，最大不能超过GB &ndash;&gt;-->
+    <!--            <maxFileSize>100MB</maxFileSize>-->
+    <!--            <maxHistory>60</maxHistory>-->
+    <!--            <totalSizeCap>2GB</totalSizeCap>-->
+    <!--        </rollingPolicy>-->
+    <!--        <encoder>-->
+    <!--            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} Line:%-3L - %msg%n</pattern>-->
+    <!--        </encoder>-->
+    <!--    </appender>-->
+    <!--    logger节点，可选节点，用来具体指明包的日志输出级别，它将会覆盖root的输出级别, 未配置level继承root的输出级别，
+      addtivity 可选节点 默认为true，将此loger的打印信息向上级传递；-->
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.apache.http" level="ERROR"/>
+    <logger name="org.apache.tomcat.jdbc" level="ERROR"/>
+<!--    <logger name="ch.qos.logback" level="ERROR"/>-->
+    <!--additivity 设置为false 打印信息不向上传递-->
+    <logger name="com.hyh.main" level="DEBUG" additivity="true">
+        <!--  日志信息交给此loger指定的名为“STDOUT”的appender处理      -->
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <!-- com.hyh.main 为 com.hyh.main.log的上级  -->
+    <logger name="com.hyh.practice" level="ERROR" additivity="true">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <!--   root为最上级-->
+    <!--    root节点，必选节点，用来指定最基础的日志输出级别，他有俩个自己点可以用来应用appender，格式化日志输出 -->
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="DEBUG"/>
+        <!--        <appender-ref ref="DEBUG"/>-->
+    </root>
+</configuration>
