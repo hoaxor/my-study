@@ -329,7 +329,7 @@ HotSpot VM的实现S，GC按照回收区域又分为两大种类，一种是部�
 
 - 查看所有参数的默认初始值：`-XX:+PrintFlagsInitial`
 - 查看所有参数的最终值（可能会存在修改，不再是初始值）：`-XX:PrintFlagsFinal`
-- 
+- ​
 
 ##### TLAB（Thread Local Allocation Buffer）
 
@@ -464,18 +464,21 @@ byte、short、char在存储前被转换为int，boolean也被转成int，0表�
 
 使用`javap -v *.class`反编译class文件
 
-- **动态链接（Dynamic Linking）**
 
-* Class文件的常量池中存在有大量的符号引用,字节码中的方法调用指令就以指向常量池的引用作为参数
-  * 部分符号引用在类加载阶段(解析)的时候就转化为直接引用,这种转化为**静态链接**
-  * 部分符号引用在运行期间转化为直接引用,这种转化为**动态链接**
+
+ 
+
+* **动态链接（Dynamic Linking）**
+  * Class文件的常量池中存在有大量的符号引用,字节码中的方法调用指令就以指向常量池的引用作为参数
+    * 部分符号引用在类加载阶段(解析)的时候就转化为直接引用,这种转化为**静态链接**
+    * 部分符号引用在运行期间转化为直接引用,这种转化为**动态链接**
 
 * **方法返回值地址（Return Address）**
 
 - 存放调用该方法的PC寄存器的值,一个方法的结束有两种方式 正常执行完成 和出现未处理异常非正常退出。
 - 无论哪种方式退出,在方法退出后都返回到该方法被调用的位置，方法正常退出，调用者的PC寄存器的值作为返回地址,即调用该方法的指令的下一条在指令的地址。
 
-* **一些附加信息**
+* 一些附加信息
   * 栈帧允许携带一些与JVM实现相关的附加信息,如对程序调优提供支持的信息
 
 
@@ -742,7 +745,7 @@ byte、short、char在存储前被转换为int，boolean也被转成int，0表�
           s.intern();// 字符串常量池中已经存在
           String s2 = "1";
           System.out.println(s == s2);//jdk6 false;jdk7/8 false
-  
+
           String s3 = new String("1") + new String("1");//不会在字符串常量池中生成"11"对象
           s3.intern();// 常量池中是s3的引用的复制品
           String s4 = "11";
@@ -995,7 +998,7 @@ public class StringTableGCTest {
   - 在桌面应用场景，可用内存一般不大（几十上百MB），可以在较短时间内完成垃圾收集
   - 在Hotspot虚拟机中，使用`-XX:+UseSerialGC`参数可以指定年轻代和老年代都是用串行收集器
     - 等价于新生代用Serial GC且老年代用Serial Old GC
-  - 
+  - ​
 
 ![](C:\Users\11690\Desktop\Markdown\Serial回收器.jpg)
 
@@ -1249,11 +1252,11 @@ public class StringTableGCTest {
           //从软引用中获取强引用
           System.out.println(objectSoftReference.get());
           System.gc();
-  
+
           System.out.println("After GC:");
           //系统内存足够，不会回收软引用可达的对象
           System.out.println(objectSoftReference.get());
-  
+
           try {
               //构造系统内存不足场景
               byte[] bytes = new byte[7 * 1024 * 1024];
