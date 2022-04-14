@@ -22,6 +22,8 @@ public class NoLockTest {
         Account.demo(synchronizedAccount);
 
         Account.demo(casAccount);
+
+        Account.demo(new MyAtomicInteger(10000));
     }
 }
 
