@@ -1,4 +1,4 @@
-package com.hyh.cas;
+package com.hyh.jmm.cas;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;

@@ -2414,7 +2414,105 @@ class Teacher {
 
 
 
+## 7. 共享模型之不可变
 
+### 7.1 日期转换问题
+
+```java
+@Slf4j(topic = "simpleDateFormat")
+public class SimpleDateFormatTest {
+    public static void main(String[] args) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        for (int i = 0; i < 100; i++) {
+            new Thread(() -> {
+                try {
+                    Date parse = simpleDateFormat.parse("2000-10-21");
+                    log.debug("{}", parse);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+    }
+}
+```
+
+`SimpleDateFormat`是线程不安全的，多线程环境下会出现异常
+
+```text
+2022-04-14 16:30:04.768 [Thread-52] DEBUG simpleDateFormat Line:21  - Sat Oct 21 00:00:00 CST 2000
+Exception in thread "Thread-76" java.lang.NumberFormatException: For input string: ""
+	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+	at java.lang.Long.parseLong(Long.java:601)
+	at java.lang.Long.parseLong(Long.java:631)
+	at java.text.DigitList.getLong(DigitList.java:195)
+	at java.text.DecimalFormat.parse(DecimalFormat.java:2082)
+	at java.text.SimpleDateFormat.subParse(SimpleDateFormat.java:2162)
+	at java.text.SimpleDateFormat.parse(SimpleDateFormat.java:1514)
+	at java.text.DateFormat.parse(DateFormat.java:364)
+	at com.hyh.jmm.immutable.SimpleDateFormatTest.lambda$main$0(SimpleDateFormatTest.java:20)
+	at java.lang.Thread.run(Thread.java:750)
+2022-04-14 16:30:04.787 [Thread-55] DEBUG simpleDateFormat Line:21  - Sat Oct 21 00:00:00 CST 2000
+
+```
+
+可以使用`JDK8`引入的`DateTimeFormatter`代替`SimpleDateFormat`时限日期转换
+
+```java
+public static void dateTimeFormatter() {
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    for (int i = 0; i < 100; i++) {
+        new Thread(() -> {
+            TemporalAccessor parse = dateTimeFormatter.parse("2000-10-21");
+            log.debug("{}", parse);
+        }).start();
+    }
+}
+```
+
+### 7.2 不可变设计
+
+以`String`为例
+
+```java
+public final class String
+    implements java.io.Serializable, Comparable<String>, CharSequence {
+    /** The value is used for character storage. */
+    private final char value[];
+
+    /** Cache the hash code for the string */
+    private int hash; // Default to 0
+}
+```
+
+
+
+#### final的使用
+
+修饰类则类不可被继承
+
+修饰字段则字段引用不可修改
+
+
+
+### 保护性拷贝
+
+在构造新字符串对象时，会生成新的char[] value，对内容进行复制。这种通过创建副本对象来避免共享的手段称之为**保护性拷贝（defensive copy）**
+
+```java
+    /**
+     * Allocates a new {@code String} so that it represents the sequence of
+     * characters currently contained in the character array argument. The
+     * contents of the character array are copied; subsequent modification of
+     * the character array does not affect the newly created string.
+     *
+     * @param  value
+     *         The initial value of the string
+     */
+    public String(char value[]) {
+        this.value = Arrays.copyOf(value, value.length);
+    }
+```
 
 
 

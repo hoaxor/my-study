@@ -1,4 +1,4 @@
-package com.hyh.cas.atom;
+package com.hyh.jmm.cas.atom;
 
 import lombok.extern.slf4j.Slf4j;
 
