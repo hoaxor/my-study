@@ -1,4 +1,4 @@
-package com.hyh.cas;
+package com.hyh.jmm.cas;
 
 import sun.misc.Unsafe;
 

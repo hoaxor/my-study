@@ -1,13 +1,16 @@
-package com.hyh.cas;
+package com.hyh.jmm.cas;
 
 /**
+ * 存在线程安全问题
+ *
  * @author : huang.yaohua
- * @date : 2022/4/10 21:05
+ * @date : 2022/4/10 21:01
  */
-public class SynchronizedAccount implements Account {
+public class UnsafeAccount implements Account {
+
     private Integer balance;
 
-    public SynchronizedAccount(Integer balance) {
+    public UnsafeAccount(Integer balance) {
         this.balance = balance;
     }
 
@@ -17,7 +20,7 @@ public class SynchronizedAccount implements Account {
     }
 
     @Override
-    public synchronized void withdraw(Integer amount) {
+    public void withdraw(Integer amount) {
         balance -= amount;
     }
 }
