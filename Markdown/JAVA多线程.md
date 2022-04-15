@@ -499,7 +499,7 @@ public class YieldTest {
 
 两阶段终止模式
 
-![](C:\Users\11690\Desktop\Markdown\picture\两阶段终止模式.png)
+![](\picture\两阶段终止模式.png)
 
 ### 3.8 守护线程和非守护线程
 
@@ -600,7 +600,7 @@ public class YieldTest {
 
 
 
-![](C:\Users\11690\Desktop\Markdown\picture\线程状态.jpg)
+![](\picture\线程状态.jpg)
 
 ## 4. 并发之共享模型
 
@@ -828,7 +828,7 @@ https://www.cnblogs.com/makai/p/12466541.html
 
 #### 4.4.2 Monitor（Synchronize原理）
 
-![](C:\Users\11690\Desktop\Markdown\picture\synchronize原理-monitor.jpg)
+![](\picture\synchronize原理-monitor.jpg)
 
 1. 刚开始`Monitor`中`Owner`为`null`。
 2. 当某个线程`t1`执行到`Synchronize`语句就会将Monitor的所有者`Owner`置为`t1`，`Monitor`中只能有一个`Owner`。
@@ -969,26 +969,26 @@ class Test {
 
 - 创建锁记录（Lock Record）对象，每个线程的栈帧包含一个锁记录的结构，内部可以存储锁定对象的Mark Word。
 
-![](C:\Users\11690\Desktop\Markdown\picture\轻量级锁1.png)
+![](\picture\轻量级锁1.png)
 
 - 让锁记录对象中`Object reference`指向锁对象，并尝试用`CAS`替换锁对象的`mark word`，将锁对象`mark word`的值存入锁记录
 
-![](C:\Users\11690\Desktop\Markdown\picture\轻量级锁2.png)
+![](\picture\轻量级锁2.png)
 
 - 如果`CAS`替换成功，对象头中存储了锁记录地址和状态00，表示由该线程给对象加锁。图示如下：
 
-![](C:\Users\11690\Desktop\Markdown\picture\轻量级锁3.png)
+![](\picture\轻量级锁3.png)
 
 - 如果`CAS`失败，有两种情况：
 
   - 如果是其它线程已经持有了该锁对象的轻量级锁，这时表明有竞争，进入锁膨胀过程。
   - 如果是自己执行了`synchronized`锁重入，那么再添加一个`Lock Record`作为重入的计数。
 
-  ![](C:\Users\11690\Desktop\Markdown\picture\轻量级锁4.png)
+  ![](\picture\轻量级锁4.png)
 
 - 当退出`synchronized`代码块，如果锁记录取值为`null`，表示有重入，这时重置锁记录。表示重入计数减一。
 
-![](C:\Users\11690\Desktop\Markdown\picture\轻量级锁5.png)
+![](\picture\轻量级锁5.png)
 
 - 当退出`synchronized`代码块，如果锁记录取值不为`null`，这时使用`CAS`将锁记录中存储的锁对象的`mark word`给锁对象还原。
   - 成功，则解锁成功。
@@ -1000,7 +1000,7 @@ class Test {
 
 - 当`Thread-1`进行轻量级加锁时，`Thread-0`已经对该对象加了轻量级锁。
 
-![](C:\Users\11690\Desktop\Markdown\picture\锁膨胀1.png)
+![](\picture\锁膨胀1.png)
 
 - 这时`Thread-1`加轻量级锁失败，进入锁膨胀流程。
 
@@ -1016,9 +1016,9 @@ class Test {
 
 ##### 4.4.5.1 自旋优化
 
-![](C:\Users\11690\Desktop\Markdown\picture\自旋优化1.png)
+![](\picture\自旋优化1.png)
 
-![](C:\Users\11690\Desktop\Markdown\picture\自旋优化2.png)
+![](\picture\自旋优化2.png)
 
 #### 4.4.6 锁消除
 
@@ -1033,7 +1033,7 @@ class Test {
 - BLOCKED线程会在Owner线程释放锁时唤醒。
 - WAITING线程会在Owner线程调用notify或notifyAll时唤醒，但唤醒后并不意味着立刻获得锁，仍需进入EntryList重新竞争。
 
-![](C:\Users\11690\Desktop\Markdown\picture\wait-notify.jpg)
+![](\picture\wait-notify.jpg)
 
 ##### 4.5.2 API介绍
 
@@ -1112,14 +1112,14 @@ public class ParkTest {
 
 ##### 4.6.2.1 先park后unpark
 
-![](C:\Users\11690\Desktop\Markdown\picture\park原理.png)
+![](\picture\park原理.png)
 
 1. 当前线程调用`Unsafe.park()`方法
 2. 检查`_counter`是否为零，这时获得`_mutex`互斥锁
 3. 线程进入`_cond`条件变量阻塞
 4. 设置`_counter = 0`
 
-![](C:\Users\11690\Desktop\Markdown\picture\unpark原理.png)
+![](\picture\unpark原理.png)
 
 1. 调用`Unsafe.unpark(Thread)`，设置`_counter`为`1` 
 2. 唤醒`_cond`条件变量中的`Thread-0`
@@ -1128,7 +1128,7 @@ public class ParkTest {
 
 ##### 4.6.2.2 先unpark后park
 
-![](C:\Users\11690\Desktop\Markdown\picture\upark后park.png)
+![](\picture\upark后park.png)
 
 1. 调用`Unsafe.unpark(Thread)`，设置`_counter = 1`
 2. 其它线程调用`Unsafe.park()`
@@ -1659,7 +1659,7 @@ public class LiveLockTest {
 
 以下是线程饥饿的例子，使用顺序加锁的方式解决死锁问题
 
-![](C:\Users\11690\Desktop\Markdown\picture\线程饥饿问题.png)
+![](\picture\线程饥饿问题.png)
 
 ### 4.8 ReentrantLock
 
@@ -2514,6 +2514,12 @@ public final class String
     }
 ```
 
+### 7.3 无状态
+
+没有成员变量就称之为**无状态**，没有任何成员变量的类是线程安全的。
+
+
+
 ## 8. 并发工具
 
 ### 8.1 线程池
@@ -2525,7 +2531,7 @@ public final class String
 
 #### 8.1.2 自定义线程池
 
-![image-20220414210617531](D:\myCode\my-study\Markdown\picture\自定义线程池.jpg)
+![image-20220414210617531](\picture\自定义线程池.jpg)
 
 步骤一：自定义拒绝策略接口
 

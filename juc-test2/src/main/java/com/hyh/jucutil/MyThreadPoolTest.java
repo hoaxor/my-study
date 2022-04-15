@@ -24,22 +24,22 @@ public class MyThreadPoolTest {
      */
     public static void test3() {
         ThreadPool threadPool = new ThreadPool(1, 1, TimeUnit.SECONDS, 1, (queue, task) -> {
-            // 死等
-            // queue.put(task);
+            // 等待
+//             queue.put(task);
             // 带超时时间的等待
-            // queue.offer(task, 1000, TimeUnit.MILLISECONDS);
+//            queue.offer(task, 1500, TimeUnit.MILLISECONDS);
             // 放弃执行任务
-
-            //抛出异常
-            // throw new RuntimeException("队列已满");
+//            log.debug("放弃任务{}", task);
+//            抛出异常
+//            throw new RuntimeException("队列已满");
             // 让调用者自己执行
-            // task.run();
+//             task.run();
         });
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 3; i++) {
             int j = i;
             threadPool.execute(() -> {
                 try {
-                    TimeUnit.SECONDS.sleep(1000);
+                    TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -108,7 +108,7 @@ class ThreadPool {
 
     private RejectPolicy<Runnable> rejectPolicy;
 
-    public ThreadPool(int coreSize, long timeout, TimeUnit timeUnit, int queueCapacity, RejectPolicy rejectPolicy) {
+    public ThreadPool(int coreSize, long timeout, TimeUnit timeUnit, int queueCapacity, RejectPolicy<Runnable> rejectPolicy) {
         this.coreSize = coreSize;
         this.timeout = timeout;
         this.timeUnit = timeUnit;
@@ -126,7 +126,7 @@ class ThreadPool {
         synchronized (workers) {
             if (workers.size() < coreSize) {
                 Worker worker = new Worker(task);
-                log.debug("worker {} add in workers", worker);
+                log.debug("{}加入工作线程集合", worker);
                 workers.add(worker);
                 worker.start();
             } else {
@@ -157,7 +157,7 @@ class ThreadPool {
             // 当task执行完后，接着再从任务队列中获取任务并执行
 //            while (task != null || (task = taskQueue.take()) != null) {
             while (task != null || (task = taskQueue.poll(timeout, timeUnit)) != null) {
-                log.debug("task {} is running", task);
+                log.debug("{}开始执行", task);
                 try {
                     task.run();
                 } catch (Exception e) {
@@ -168,7 +168,7 @@ class ThreadPool {
             }
 
             synchronized (workers) {
-                log.debug("worker {} is removing ", this);
+                log.debug("移除工作线程{}", this);
                 workers.remove(this);
             }
         }
@@ -256,13 +256,13 @@ class BlockingQueue<T> {
         try {
             while (queue.size() >= capacity) {
                 try {
-                    log.debug("t {} wait to put", t);
+                    log.debug("{}等待进入任务队列", t);
                     fullWaitSet.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            log.debug("t {} is put in queue", t);
+            log.debug("{}加入任务队列", t);
             queue.addLast(t);
             emptyWaitSet.signal();
         } finally {
@@ -273,11 +273,12 @@ class BlockingQueue<T> {
     public void put(RejectPolicy<T> rejectPolicy, T t) {
         lock.lock();
         try {
-            //队列已满
+            //队列已满 执行拒绝策略
             if (queue.size() >= capacity) {
+                log.debug("任务队列已满，执行拒绝策略");
                 rejectPolicy.reject(this, t);
             } else {
-                log.debug("{} add last", t);
+                log.debug("{}加入任务队列", t);
                 queue.addLast(t);
                 emptyWaitSet.signal();
             }
@@ -292,13 +293,17 @@ class BlockingQueue<T> {
         try {
             while (queue.size() >= capacity) {
                 try {
-                    log.debug("t {} wait to put", t);
+                    if (nanos <= 0) {
+                        log.debug("{}等待超时，放弃等待", t);
+                        return;
+                    }
+                    log.debug("{}等待进入任务队列", t);
                     nanos = fullWaitSet.awaitNanos(nanos);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            log.debug("t {} is put in queue", t);
+            log.debug("{}加入任务队列", t);
             queue.addLast(t);
             emptyWaitSet.signal();
         } finally {
@@ -314,8 +319,6 @@ class BlockingQueue<T> {
             lock.unlock();
         }
     }
-
-
 }
 
 @FunctionalInterface
