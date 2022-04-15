@@ -1,4 +1,4 @@
-package com.hyh.jucutil;
+package com.hyh.jucutil.threadpool;
 
 import lombok.extern.slf4j.Slf4j;
 

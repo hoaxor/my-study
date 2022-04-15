@@ -2540,6 +2540,87 @@ public final class String
 
 
 
+#### 8.1.3 ThreadPoolExecutor
+
+![ThreadPoolExecutor](\picture\image-20220415175439568.png)
+
+##### 1. 线程池状态
+
+```java
+    /**
+     * The main pool control state, ctl, is an atomic integer packing
+     * two conceptual fields
+     *   workerCount, indicating the effective number of threads
+     *   runState,    indicating whether running, shutting down etc
+     *
+     * In order to pack them into one int, we limit workerCount to
+     * (2^29)-1 (about 500 million) threads rather than (2^31)-1 (2
+     * billion) otherwise representable. If this is ever an issue in
+     * the future, the variable can be changed to be an AtomicLong,
+     * and the shift/mask constants below adjusted. But until the need
+     * arises, this code is a bit faster and simpler using an int.
+     *
+     * The workerCount is the number of workers that have been
+     * permitted to start and not permitted to stop.  The value may be
+     * transiently different from the actual number of live threads,
+     * for example when a ThreadFactory fails to create a thread when
+     * asked, and when exiting threads are still performing
+     * bookkeeping before terminating. The user-visible pool size is
+     * reported as the current size of the workers set.
+     *
+     * The runState provides the main lifecycle control, taking on values:
+     *
+     *   RUNNING:  Accept new tasks and process queued tasks
+     *   SHUTDOWN: Don't accept new tasks, but process queued tasks
+     *   STOP:     Don't accept new tasks, don't process queued tasks,
+     *             and interrupt in-progress tasks
+     *   TIDYING:  All tasks have terminated, workerCount is zero,
+     *             the thread transitioning to state TIDYING
+     *             will run the terminated() hook method
+     *   TERMINATED: terminated() has completed
+     *
+     * The numerical order among these values matters, to allow
+     * ordered comparisons. The runState monotonically increases over
+     * time, but need not hit each state. The transitions are:
+     *
+     * RUNNING -> SHUTDOWN
+     *    On invocation of shutdown(), perhaps implicitly in finalize()
+     * (RUNNING or SHUTDOWN) -> STOP
+     *    On invocation of shutdownNow()
+     * SHUTDOWN -> TIDYING
+     *    When both queue and pool are empty
+     * STOP -> TIDYING
+     *    When pool is empty
+     * TIDYING -> TERMINATED
+     *    When the terminated() hook method has completed
+     *
+     * Threads waiting in awaitTermination() will return when the
+     * state reaches TERMINATED.
+     *
+     * Detecting the transition from SHUTDOWN to TIDYING is less
+     * straightforward than you'd like because the queue may become
+     * empty after non-empty and vice versa during SHUTDOWN state, but
+     * we can only terminate if, after seeing that it is empty, we see
+     * that workerCount is 0 (which sometimes entails a recheck -- see
+     * below).
+     */
+    private final AtomicInteger ctl = new AtomicInteger(ctlOf(RUNNING, 0));
+```
+
+ThreadPoolExecutor使用int的高3位表示线程池状态，低29位表示线程数量
+
+| 状态       | 高三位 | 是否接收新任务 | 处理阻塞任务 | 说明                                        |
+| ---------- | ------ | -------------- | ------------ | ------------------------------------------- |
+| RUNNING    | 111    | 是             | 是           |                                             |
+| SHUTDOWN   | 000    | 否             | 是           | 不会接收新任务，但会执行阻塞任务            |
+| STOP       | 001    | 否             | 否           | 会中断正在执行的任务并抛弃阻塞队列任务      |
+| TIDYING    | 010    | -              | -            | 任务全执行完毕，活动线程为0即将进入终结状态 |
+| TERMINATED | 011    | -              | -            | 终结状态                                    |
+
+
+
+##### 2. 
+
 
 
 
