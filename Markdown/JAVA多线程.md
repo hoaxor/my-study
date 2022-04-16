@@ -2526,14 +2526,18 @@ public final class String
 
 #### 8.1.1 线程池的优点
 
-- 线程上下文切换
-- 线程创建消耗需要一定时间，线程池内的线程可重用
+- 风险不受控，线程上下文切换开销、系统资源有限
+- 线程创建开销大（本地方法栈、虚拟机栈）
+- 利用线程池管理并服用线程，控制最大并发数
+- 实现任务线程队列缓存策略和拒绝机制
+- 实现某些与实践相关的功能，如定时执行，周期执行等
+- 隔离线程环境，比如，交易服务和搜索服务在同一台服务器上，分别开启两个线程池，交易线程的资源消耗明显要大。因此，通过配置独立的线程池，将较慢的交易服务与搜索服务个离开，避免个服务线程互相影响
 
 #### 8.1.2 自定义线程池
 
-![image-20220414210617531](\picture\自定义线程池.jpg)
+![](.\picture\自定义线程池.jpg)
 
-步骤一：自定义拒绝策略接口
+
 
 ```java
 ```
@@ -2617,11 +2621,84 @@ ThreadPoolExecutor使用int的高3位表示线程池状态，低29位表示线�
 | TIDYING    | 010    | -              | -            | 任务全执行完毕，活动线程为0即将进入终结状态 |
 | TERMINATED | 011    | -              | -            | 终结状态                                    |
 
+这些信息存储在一个原子变量`ctl`中，目的是将线程池状态与线程个数合二为一，这样就可以用一次`cas`原子操作进行赋值
+
+```java
+//c 旧值，ctlOf返回值为新值
+ctl.compareAndSet(c, ctlOf(targetState, workerCountOf(c)))
+// rs 前3位表示线程池状态，wc 后29位代表线程格式，ctl是合并结果
+private static int ctlOf(int rs, int wc) { return rs | wc; }
+```
 
 
-##### 2. 
 
+##### 2. 构造方法
 
+```java
+    public ThreadPoolExecutor(int corePoolSize,
+                              int maximumPoolSize,
+                              long keepAliveTime,
+                              TimeUnit unit,
+                              BlockingQueue<Runnable> workQueue,
+                              ThreadFactory threadFactory,
+                              RejectedExecutionHandler handler)
+```
+
+- `corePoolSize`核心线程数量（任务执行完时仍然会保留的线程数量）
+- `maximumPoolSize`最大线程数量
+- `keepAliveTime`生存时间，默认情况下，只有当线程池中的线程数大于`corePoolSize`时，`keepAliveTime`才会起作用，直到线程池中的线程数不大于`corePoolSize`，即当线程池中的线程数大于`corePoolSize`时，如果一个线程空闲的时间达到`keepAliveTime`，则会终止，直到线程池中的线程数不超过`corePoolSize`。但是如果调用了`allowCoreThreadTimeOut(boolean)`方法，在线程池中的线程数不大于`corePoolSize`时，`keepAliveTime`参数也会起作用，直到线程池中的线程数为0；
+  - 救急线程
+- `unit`时间单位，针对救急线程
+- `workQueue`阻塞队列，当任务数量大于`maximumPoolSize`时，任务进入该阻塞队列
+- `threadFactory`线程工厂，可以自定义线程名
+- `handler`拒绝策略
+
+##### 3. 执行流程
+
+1. 线程池中刚开始没有线程，当一个任务提交后就会创建一个线程来执行任务
+2. 当线程数量达到`corePoolSize`并且没有线程空闲，这时再加入任务，新加入的任务会被加入`workQueue`队列排队，直到有空闲的线程。
+3. 如果队列选择了有界队列，那么任务超过队列大小时，会创建`maximumPoolSize - corePoolSize`数量的线程来救急
+4. 如果线程到达了`maximumPoolSize`仍有新任务这时会执行拒绝策略，拒绝策略JDK提供了四种实现，其它著名框架也提供了实现
+   - `AbortPolicy`，让调用者抛出`RejectedExecutionException`异常，这是默认策略
+   - `CallerRunsPolicy`，让调用者执行任务
+   - `DiscardOldestPolicy`，放弃最早加入队列的任务
+   - `DiscardPolicy`，放弃任务
+   - Dubbo的实现，在抛出`RejectedExecutionException`异常之前会记录日志，并dump线程栈信息。
+   - `Netty`的实现，是创建一个新线程来执行
+   - `ActiveMQ`，带超时等待（60s）尝试放入队列
+   - `PinPoint`，使用了一个拒绝策略链，会逐一尝试策略链中每种拒绝策略
+5. 当高峰过后，超过`corePoolSize`的救急线程如果一段时间没有任务做，需要节省资源，会终止，这个时间由`keepAliveTime`和`unit`决定
+
+##### newFixedThreadPool
+
+```java
+public static ExecutorService newFixedThreadPool(int nThreads) {
+    return new ThreadPoolExecutor(nThreads, nThreads,
+                                  0L, TimeUnit.MILLISECONDS,
+                                  new LinkedBlockingQueue<Runnable>());
+}
+```
+
+##### newCachedThreadPool
+
+```java
+public static ExecutorService newCachedThreadPool() {
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                  60L, TimeUnit.SECONDS,
+                                  new SynchronousQueue<Runnable>());
+}
+```
+
+##### newSingleThreadExecutor
+
+```java
+public static ExecutorService newSingleThreadExecutor() {
+    return new FinalizableDelegatedExecutorService
+        (new ThreadPoolExecutor(1, 1,
+                                0L, TimeUnit.MILLISECONDS,
+                                new LinkedBlockingQueue<Runnable>()));
+}
+```
 
 
 
