@@ -12,9 +12,9 @@
         b. value，用于${name}访问的value
         c. file ，用于指定配置文件的路径，他的作用在于，如果你有多个配置信息的话，可以直接写在配置文件中，然后通过file引入，如
         <property file="src/main/java/chapters/configuration/variables.properties" />-->
-    <property name="path" value="Y:logs\\logback.log"/>
-    <property name="path2" value="Y:logs\\logback.log"/>
-    <property name="path3" value="Y:logs\\logback.log"/>
+    <property name="path" value=".\\logs\\logback.log"/>
+    <property name="path2" value=".\\logs\\logback.log"/>
+    <property name="path3" value=".\\logs\\logback.log"/>
     <!--    appender格式化日志输出节点，有俩个属性name和class，class用来指定哪种输出策略，常用就是控制台输出策略和文件输出策略。appender有以下子节点：-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!--encoder 默认配置为PatternLayoutEncoder-->

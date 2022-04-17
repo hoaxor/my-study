@@ -2669,7 +2669,7 @@ private static int ctlOf(int rs, int wc) { return rs | wc; }
    - `PinPoint`，使用了一个拒绝策略链，会逐一尝试策略链中每种拒绝策略
 5. 当高峰过后，超过`corePoolSize`的救急线程如果一段时间没有任务做，需要节省资源，会终止，这个时间由`keepAliveTime`和`unit`决定
 
-##### newFixedThreadPool
+##### 4. newFixedThreadPool
 
 ```java
 public static ExecutorService newFixedThreadPool(int nThreads) {
@@ -2679,7 +2679,7 @@ public static ExecutorService newFixedThreadPool(int nThreads) {
 }
 ```
 
-##### newCachedThreadPool
+##### 5. newCachedThreadPool
 
 ```java
 public static ExecutorService newCachedThreadPool() {
@@ -2689,7 +2689,7 @@ public static ExecutorService newCachedThreadPool() {
 }
 ```
 
-##### newSingleThreadExecutor
+##### 6. newSingleThreadExecutor
 
 ```java
 public static ExecutorService newSingleThreadExecutor() {
@@ -2700,7 +2700,289 @@ public static ExecutorService newSingleThreadExecutor() {
 }
 ```
 
+##### 7.  提交任务
 
+```java
+
+// 提交任务task,用返回值Future获得任务执行结果
+public <T> Future<T> submit(Callable<T> task)
+// 提交集合中所有的任务，返回Future
+public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)
+// 提交集合中所有任务，哪个任务先成功执行完毕，就返回此任务执行结果，其他任务取消
+public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
+```
+
+##### 8. 关闭线程池
+
+```java
+    /**
+     * 线程池状态变为SHUTDOWN
+     * 不会接受新任务
+     * 已提交任务会执行完
+     * 此方法不会阻塞等待所有线程执行完
+     * Initiates an orderly shutdown in which previously submitted
+     * tasks are executed, but no new tasks will be accepted.
+     * Invocation has no additional effect if already shut down.
+     *
+     * <p>This method does not wait for previously submitted tasks to
+     * complete execution.  Use {@link #awaitTermination awaitTermination}
+     * to do that.
+     *
+     * @throws SecurityException {@inheritDoc}
+     */
+    public void shutdown() {
+        final ReentrantLock mainLock = this.mainLock;
+        mainLock.lock();
+        try {
+            checkShutdownAccess();
+            advanceRunState(SHUTDOWN);
+            interruptIdleWorkers();
+            onShutdown(); // hook for ScheduledThreadPoolExecutor
+        } finally {
+            mainLock.unlock();
+        }
+        tryTerminate();
+    }
+```
+
+
+
+```java
+    /**
+     * 尝试打断所有正在执行的任务 停止正在等待的任务
+     * 返回一个等待执行的任务列表
+     * 不会接受新任务 
+     *
+     *
+     * Attempts to stop all actively executing tasks, halts the
+     * processing of waiting tasks, and returns a list of the tasks
+     * that were awaiting execution. These tasks are drained (removed)
+     * from the task queue upon return from this method.
+     *
+     * <p>This method does not wait for actively executing tasks to
+     * terminate.  Use {@link #awaitTermination awaitTermination} to
+     * do that.
+     *
+     * <p>There are no guarantees beyond best-effort attempts to stop
+     * processing actively executing tasks.  This implementation
+     * cancels tasks via {@link Thread#interrupt}, so any task that
+     * fails to respond to interrupts may never terminate.
+     *
+     * @throws SecurityException {@inheritDoc}
+     */
+    public List<Runnable> shutdownNow() {
+        List<Runnable> tasks;
+        final ReentrantLock mainLock = this.mainLock;
+        mainLock.lock();
+        try {
+            checkShutdownAccess();
+            advanceRunState(STOP);
+            interruptWorkers();
+            tasks = drainQueue();
+        } finally {
+            mainLock.unlock();
+        }
+        tryTerminate();
+        return tasks;
+    }
+```
+
+
+
+##### 9. 任务调度线程池
+
+在**任务调度线程池**加入之前，可以使用`java.util.Timer`来实现定时功能，Timer的优点在于简单易用，但由于所有任务都是由同一个线程来调度，因此所有任务都是串行执行的，同一时间只能有一个任务在执行，前一个任务出现延迟或异常都将影响到之后的任务
+
+```java
+    public static void test1() {
+        Timer timer = new Timer();
+
+        TimerTask timerTask1 = new TimerTask() {
+
+            @Override
+            public void run() {
+                try {
+                    TimeUnit.SECONDS.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                log.debug("11111111");
+            }
+        };
+        TimerTask timerTask2 = new TimerTask() {
+            @Override
+            public void run() {
+
+                log.debug("222222222");
+            }
+        };
+        log.debug("start...");
+        // 使用timer添加两个任务，希望它们在1s后执行
+        timer.schedule(timerTask1, 1_000);
+        // timer内部使用一个线程来顺序执行队列中的任务，因为timerTask1的延时影响到了timerTask2的执行
+        // 若前面的异常发生了异常会影响后面任务的执行
+        timer.schedule(timerTask2, 1_000);
+    }
+```
+
+可以使用`Executors.newScheduledThreadPool`代替`Timer`解决上述问题
+
+```java
+    public static void test2() {
+        //可以设置多个工作线程，使得多个任务同时执行
+        //corePoolSize设为1时，多个任务串行执行
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1,
+                r -> new Thread(null, r, "schedule thread"));
+
+        scheduledExecutorService.schedule(() -> {
+            log.debug("task 1");
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //任务异常不会影响后续任务的执行
+            log.debug("{}", 1 / 0);
+        }, 1, TimeUnit.SECONDS);
+
+        scheduledExecutorService.schedule(() -> {
+            log.debug("task 2");
+        }, 1, TimeUnit.SECONDS);
+
+//        scheduledExecutorService.scheduleAtFixedRate();
+    }
+
+    public static void test3() {
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        //延迟计算从任务开始时
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            log.debug("fix rate start");
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.debug("fix rate end");
+
+        }, 0, 2, TimeUnit.SECONDS);
+    }
+
+    public static void test4() {
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        //延迟计算从任务结束时
+        scheduledExecutorService.scheduleWithFixedDelay(() -> {
+            log.debug("fix rate start");
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.debug("fix rate end");
+
+        }, 0, 2, TimeUnit.SECONDS);
+    }
+```
+
+
+
+##### 10. 正确处理线程池任务异常
+
+```java
+    public static void test1() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        // 提交Callable任务，如果任务内部出现异常，会在future.get()时抛出
+        // 也可在任务内部捕获异常
+        Future<Boolean> fu = executorService.submit(() -> {
+            log.debug("{}", 1 / 0);
+            return true;
+        });
+        log.debug("future.get()={}", fu.get());
+    }
+```
+
+##### 11. 任务调度线程池之应用
+
+```java
+   /**
+     * 每周四下午6点定时执行任务
+     */
+    public static void test1() {
+        ScheduledExecutorService schedule = Executors.newScheduledThreadPool(1);
+
+        long delay;
+        long period;
+
+        //获取当前时间
+        LocalDateTime now = LocalDateTime.now();
+        log.debug("now={}", now);
+
+        // 获取周四的时间对象，获取的时间对象可能时在当前时间之前
+        LocalDateTime time = now.withHour(18).withMinute(0).withSecond(0).withNano(0).with(DayOfWeek.THURSDAY);
+//        log.debug("{}", time);
+
+        //当前时间大于下次执行时间则加一星期
+        if (now.compareTo(time) > 0) {
+            time = time.plusWeeks(1);
+        }
+        log.debug("next time={}", time);
+
+        //计算两个时间对象间隔的毫秒数
+        delay = Duration.between(now, time).toMillis();
+        // 一周毫秒数
+        period = 7 * 24 * 60 * 60 * 1000;
+
+        log.debug("delay={}", delay);
+
+
+        schedule.scheduleAtFixedRate(() -> {
+            log.debug("开始执行定时任务：{}", LocalDateTime.now());
+        }, delay, period, TimeUnit.MILLISECONDS);
+    }
+```
+
+
+
+##### 12. Tomcat线程池
+
+![image-20220417204538862](\picture\image-20220417204538862.png)
+
+- `LimitLatch`用来限流，可以控制最大连接数，类似`JUC`中的`Semaphore`
+- `Acceptor`只负责接受新的`socket`
+- `Poller`只负责监听`socket channel`是否有可读的IO事件
+- 一旦可读，封装一个任务对象`sockeProcessor`，提交给`Executor`线程池处理
+- `Executor`线程池中的工作线程最终负责处理请求
+
+Tomcat线程池扩展了`ThreadPoolExecutor`，行为稍有不同
+
+- 如果总数达到`maximumPoolSize`
+  - 不会立即抛出`RejectedExecutionException`，会在第一次失败后再次尝试放入队列，如果还是失败则才抛出`RejectedExecutionException`
+
+![image-20220417211604196](\picture\image-20220417211604196.png)
+
+![image-20220417211655900](\picture\image-20220417211655900.png)
+
+
+
+![image-20220417211950873](\picture\image-20220417211950873.png)
+
+#### 8.1.4 Fork/Join
+
+##### 概念
+
+`Fork/Join`是`JDK７`加入的新的线程池实现，它体现的是一种分治思想，适用于能够进行任务拆分的`CPU`密集型运算
+
+所谓任务拆分，是将一个大任务拆分为相同的小任务，直至不能拆分可以直接求解。跟递归相关的一些计算，如归并排序、斐波那契数列都可以使用分治思想进行求解
+
+`Fork/Join` 在分治的基础上加入了多线程，可以把每个任务的分解和合并交给不同的线程来完成，进一步提升了运算效率
+
+`Fork/Join`会默认创建与`CPU`核心数相同的线程池
+
+
+
+##### 使用
+
+提交
 
 ## Lock接口
 
