@@ -3117,9 +3117,115 @@ class MyTask2 extends RecursiveTask<Integer> {
 
 
 
-### 8.2 AQS原理
+### 8.2 JUC
+
+#### 1. AQS原理
+
+#### 2. RenentrantLock原理
+
+#### 3. 读写锁
+
+##### 3.1 ReentrantReadWriteLock
+
+当读操作远高于写操作时，这时使用**读写锁**，让**读-读**可以并发，提高性能
+
+提供一个数据容器类，内部分别使用读锁保护数据的`read()`方法，写锁保护数据的`write()`方法
+
+```java
+package com.hyh.jucutil.aqs;
+
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+/**
+ * @author : huang.yaohua
+ * @date : 2022/4/23 19:38
+ */
+@Slf4j(topic = "readWriteLockTest")
+public class ReadWriteLockTest {
+    public static void main(String[] args) throws InterruptedException {
+        test2();
+    }
+
+    /**
+     * 读-读锁不互斥
+     */
+    public static void test1() {
+        DataContainer dataContainer = new DataContainer();
+        new Thread(() -> {
+            log.debug("{}", dataContainer.read());
+        }).start();
+
+        new Thread(() -> {
+            log.debug("{}", dataContainer.read());
+        }).start();
+    }
+
+    /**
+     * 读-写锁互斥
+     */
+    public static void test2() throws InterruptedException {
+        DataContainer dataContainer = new DataContainer();
+
+        new Thread(dataContainer::write).start();
+
+        TimeUnit.MILLISECONDS.sleep(100);
+
+        new Thread(() -> {
+            log.debug("{}", dataContainer.read());
+        }).start();
+    }
+}
+
+@Slf4j(topic = "dataContainer")
+class DataContainer {
+    private Object data;
+
+    private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+
+    private final ReentrantReadWriteLock.ReadLock readLock = readWriteLock.readLock();
+
+    private final ReentrantReadWriteLock.WriteLock writeLock = readWriteLock.writeLock();
 
 
+    public Object read() {
+        log.debug("获取读锁");
+        readLock.lock();
+        try {
+            log.debug("read");
+            return data;
+        } finally {
+            log.debug("释放读锁");
+            readLock.unlock();
+        }
+    }
+
+    public void write() {
+        log.debug("获取写锁");
+        writeLock.lock();
+        try {
+            log.debug("write");
+            this.data = "1";
+        } finally {
+            log.debug("释放写锁");
+            writeLock.unlock();
+        }
+    }
+}
+
+```
+
+
+
+##### 注意事项
+
+- 读锁不支持条件变量
+- 重入时升级不支持，即持有读锁的情况下获取写锁，会导致永久等待
+- 冲入时降级支持，即持有写锁的情况下获取读锁
+
+![image-20220423195922892](\picture\image-20220423195922892.png)
 
 提交
 
