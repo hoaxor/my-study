@@ -1,4 +1,4 @@
-package com.hyh.jucutil.threadpool.aqs;
+package com.hyh.jucutil.aqs;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j(topic = "aqsTest")
 public class AQSTest {
