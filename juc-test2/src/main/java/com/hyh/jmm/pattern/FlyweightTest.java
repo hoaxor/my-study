@@ -20,6 +20,7 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
@@ -106,6 +107,73 @@ class Pool {
                 synchronized (this) {
                     this.notifyAll();
                 }
+                break;
+            }
+        }
+    }
+}
+
+@Slf4j(topic = "semaphorePool")
+class SemaphorePool {
+
+    public static final int FREE = 0;
+
+    public static final int BUSY = 1;
+    /**
+     * 连接池大小
+     */
+    private int poolSize;
+
+    /**
+     * 连接数组
+     */
+    private Connection[] connections;
+
+    /**
+     * 连接数组中每个连接的状态 1 忙 0 闲
+     */
+    private AtomicIntegerArray states;
+
+    private Semaphore semaphore;
+
+    public SemaphorePool(int poolSize) {
+        this.poolSize = poolSize;
+        semaphore = new Semaphore(poolSize);
+        states = new AtomicIntegerArray(poolSize);
+        connections = new MockConnection[poolSize];
+        for (int i = 0; i < poolSize; i++) {
+            connections[i] = new MockConnection("连接" + i);
+        }
+    }
+
+    public Connection getConnection() {
+        try {
+            // 获取资源，计数减一
+            // `Semaphore`通过使用计数器来控制对共享资源的访问。
+            // 如果计数器大于0，则允许访问。 如果为0，则拒绝访问，线程在此等待
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+        for (int i = 0; i < connections.length; i++) {
+            //获取空闲连接
+            if (states.compareAndSet(i, FREE, BUSY)) {
+                Connection connection = connections[i];
+                log.debug("获取连接{}", connection);
+                return connection;
+            }
+        }
+        return null;
+    }
+
+    public void free(Connection conn) {
+        for (int i = 0; i < connections.length; i++) {
+            if (connections[i] == conn) {
+                log.debug("释放连接{}", conn);
+                states.set(i, FREE);
+                // 释放资源，计数加一
+                semaphore.release();
                 break;
             }
         }

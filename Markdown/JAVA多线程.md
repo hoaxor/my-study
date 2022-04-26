@@ -3125,7 +3125,7 @@ class MyTask2 extends RecursiveTask<Integer> {
 
 #### 3. 读写锁
 
-##### 3.1 ReentrantReadWriteLock
+##### 3.1ReentrantReadWriteLock
 
 当读操作远高于写操作时，这时使用**读写锁**，让**读-读**可以并发，提高性能
 
@@ -3381,6 +3381,8 @@ public class CachedBaseDAO extends BaseDAO {
 
 
 
+##### ReentrantReadWriteLock原理
+
 ##### 3.2 StampedLock
 
 自`JDK8`后加入，是为了进一步优化读性能，它的特点是使用读锁、写锁时都必须配合**戳**使用
@@ -3499,6 +3501,182 @@ class StampedDataContainer {
 - 不支持条件变量
 
 #### 4. Semaphore
+
+`Semaphore`（信号量）是用来控制同时访问特定资源的线程数量，通过协调各个线程以保证合理地使用公共资源。
+
+`Semaphore`通过使用计数器来控制对共享资源的访问。 如果计数器大于0，则允许访问。 如果为0，则拒绝访问。 计数器所计数的是允许访问共享资源的许可。 因此，要访问资源，必须从信号量中授予线程许可。
+
+原文链接：https://blog.csdn.net/warybee/article/details/111316932
+
+##### Semaphore应用
+
+```java
+@Slf4j(topic = "semaphorePool")
+class SemaphorePool {
+
+    public static final int FREE = 0;
+
+    public static final int BUSY = 1;
+    /**
+     * 连接池大小
+     */
+    private int poolSize;
+
+    /**
+     * 连接数组
+     */
+    private Connection[] connections;
+
+    /**
+     * 连接数组中每个连接的状态 1 忙 0 闲
+     */
+    private AtomicIntegerArray states;
+
+    private Semaphore semaphore;
+
+    public SemaphorePool(int poolSize) {
+        this.poolSize = poolSize;
+        semaphore = new Semaphore(poolSize);
+        states = new AtomicIntegerArray(poolSize);
+        connections = new MockConnection[poolSize];
+        for (int i = 0; i < poolSize; i++) {
+            connections[i] = new MockConnection("连接" + i);
+        }
+    }
+
+    public Connection getConnection() {
+        try {
+            // 获取资源，计数减一
+            // `Semaphore`通过使用计数器来控制对共享资源的访问。
+            // 如果计数器大于0，则允许访问。 如果为0，则拒绝访问，线程在此等待
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+        for (int i = 0; i < connections.length; i++) {
+            //获取空闲连接
+            if (states.compareAndSet(i, FREE, BUSY)) {
+                Connection connection = connections[i];
+                log.debug("获取连接{}", connection);
+                return connection;
+            }
+        }
+        return null;
+    }
+
+    public void free(Connection conn) {
+        for (int i = 0; i < connections.length; i++) {
+            if (connections[i] == conn) {
+                log.debug("释放连接{}", conn);
+                states.set(i, FREE);
+                // 释放资源，计数加一
+                semaphore.release();
+                break;
+            }
+        }
+    }
+}
+```
+
+##### Semaphore原理
+
+#### 5.CountDownLatch
+
+CountDownLatch是一个同步工具类，用来协调多个线程之间的同步，或者说起到线程之间的通信（而不是用作互斥的作用）。
+
+CountDownLatch能够使一个线程在等待另外一些线程完成各自工作之后，再继续执行。使用一个计数器进行实现。计数器初始值为线程的数量。当每一个线程完成自己任务后，计数器的值就会减一。当计数器的值为0时，表示所有的线程都已经完成一些任务，然后在CountDownLatch上等待的线程就可以恢复执行接下来的任务
+
+原文链接：https://blog.csdn.net/weixin_45976114/article/details/115305188
+
+```java
+@Slf4j(topic = "countDown")
+public class CountDownLatchTest {
+    public static void main(String[] args) throws InterruptedException {
+        test();
+    }
+
+    public static void test() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(3);
+        log.debug("count {}", countDownLatch.getCount());
+        new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.debug("count {}", countDownLatch.getCount());
+            countDownLatch.countDown();
+        }).start();
+        new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(1500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.debug("count {}", countDownLatch.getCount());
+            countDownLatch.countDown();
+        }).start();
+        new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.debug("count {}", countDownLatch.getCount());
+            countDownLatch.countDown();
+        }).start();
+
+        new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(2500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.debug("count {}", countDownLatch.getCount());
+            countDownLatch.countDown();
+        }).start();
+
+
+        //计数变为0之前会一直阻塞在此
+        countDownLatch.await();
+        log.debug("countDown release");
+    }
+}
+```
+
+```java
+
+    public static void test2() throws InterruptedException {
+        ExecutorService service = new ThreadPoolExecutor(10,
+                10, 0, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
+        String[] s = new String[10];
+        Random random = new Random();
+        CountDownLatch countDownLatch = new CountDownLatch(10);
+
+        for (int j = 0; j < s.length; j++) {
+            int k = j;
+            service.submit(() -> {
+                for (int i = 0; i <= 100; i++) {
+
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(random.nextInt(100));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    s[k] = i + "%";
+                    //这种方式打印，前面打印的结果会覆盖后面的
+                    System.out.print("\r" + Arrays.toString(s));
+                }
+                countDownLatch.countDown();
+            });
+        }
+
+        service.shutdown();
+        countDownLatch.await();
+        System.out.println("\ngame start");
+    }
+```
 
 
 
