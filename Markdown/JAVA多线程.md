@@ -3227,6 +3227,281 @@ class DataContainer {
 
 ![image-20220423195922892](\picture\image-20220423195922892.png)
 
+应用
+
+```java
+@Slf4j(topic = "readWriteDAOTest")
+public class ReadWriteLockDAOTest {
+    public static void main(String[] args) {
+        BaseDAO baseDAO = new BaseDAO();
+        test1(baseDAO);
+        BaseDAO cacheDAO = new CachedBaseDAO();
+        test1(cacheDAO);
+
+    }
+
+    /**
+     * 无缓存
+     * 每次都从数据库读
+     * 数据库压力大
+     * 高性能、高并发
+     * 数据库并发有限
+     * 数据库读取数据速度低于读取缓存
+     */
+    public static void test1(BaseDAO regionDAO) {
+//        Map<String, Object> param = new HashMap<>();
+        String region = "-977737102";
+//        param.put("communityId", region);
+        log.debug("========================query========================");
+        String sql = "select 1 from wfm_region where region_no = ?";
+        Map<String, Object> map = regionDAO.query(sql, region);
+
+        System.out.println(map);
+        map = regionDAO.query(sql, region);
+        System.out.println(map);
+        map = regionDAO.query(sql, region);
+        System.out.println(map);
+        log.debug("========================update========================");
+
+        regionDAO.update("update wfm_region set a.region_name = ? where region_no = ?", "hyh", region);
+        map = regionDAO.query(sql, region);
+        System.out.println(map);
+    }
+}
+@Slf4j(topic = "baseDao")
+public class BaseDAO {
+    private final JdbcTemplate jdbcTemplate = JDBCUtil.getJdbcTemplate();
+
+    public Map<String, Object> query(String sql, Object... args) {
+        log.debug("sql={},args={}", sql, args);
+        return jdbcTemplate.queryForMap(sql, args);
+    }
+
+    public int update(String sql, Object... args) {
+        log.debug("sql={},args={}", sql, args);
+        return jdbcTemplate.update(sql, args);
+    }
+}
+//带缓存的数据访问对象
+public class CachedBaseDAO extends BaseDAO {
+
+    //sql语句+参数作为key
+    //HashMap线程不安全
+    private Map<SqlPair, Map<String, Object>> cache = new HashMap<>();
+
+    private ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+
+    private ReentrantReadWriteLock.ReadLock readLock = readWriteLock.readLock();
+
+    private ReentrantReadWriteLock.WriteLock writeLock = readWriteLock.writeLock();
+
+
+    @Override
+    public Map<String, Object> query(String sql, Object... args) {
+        SqlPair sqlPair = new SqlPair(sql, args);
+        Map<String, Object> map;
+        readLock.lock();
+        try {
+            map = cache.get(sqlPair);
+        } finally {
+            readLock.unlock();
+        }
+        if (null != map) {
+            return map;
+        }
+
+
+        writeLock.lock();
+        try {
+            //要使用双重检测
+            // 若多个线程同时来查数据，
+            // 首个线程读取成功后缓存会被更新，后面的线程可以直接从缓存查询数据
+            map = cache.get(sqlPair);
+            if (null != map) {
+                return map;
+            }
+            map = super.query(sql, args);
+            cache.put(sqlPair, map);
+            return map;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
+    public int update(String sql, Object... args) {
+        //先更新后清除缓存
+        //先清除缓存后更新数据容易造成更大的数据不一致问题
+        writeLock.lock();
+        try {
+            int update = super.update(sql, args);
+            cache.clear();
+            return update;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
+     * 缓存key
+     */
+    class SqlPair {
+        private String sql;
+
+        private Object[] args;
+
+        public SqlPair(String sql, Object[] args) {
+            this.sql = sql;
+            this.args = args;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SqlPair sqlPair = (SqlPair) o;
+            return sql.equals(sqlPair.sql) && Arrays.equals(args, sqlPair.args);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(sql);
+            result = 31 * result + Arrays.hashCode(args);
+            return result;
+        }
+    }
+}
+```
+
+![image-20220425215448648](\picture\image-20220425215448648.png)
+
+![image-20220425214046216](\picture\image-20220425214046216.png)
+
+![image-20220425214106161](\picture\image-20220425214106161.png)
+
+
+
+##### 3.2 StampedLock
+
+自`JDK8`后加入，是为了进一步优化读性能，它的特点是使用读锁、写锁时都必须配合**戳**使用
+
+![image-20220425224640201](\picture\image-20220425224640201.png)
+
+##### StampedLock应用
+
+```java
+package com.hyh.jucutil.aqs;
+
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.StampedLock;
+
+@Slf4j(topic = "stampedLock")
+public class StampedLockTest {
+    public static void main(String[] args) throws InterruptedException {
+        test2();
+    }
+
+    public static void test1() {
+        StampedDataContainer dataContainer = new StampedDataContainer(0);
+        new Thread(() -> {
+            try {
+                dataContainer.read(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        new Thread(() -> {
+            try {
+                dataContainer.read(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+    }
+
+    public static void test2() throws InterruptedException {
+        StampedDataContainer dataContainer = new StampedDataContainer(1);
+        new Thread(() -> {
+            try {
+                dataContainer.read(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        TimeUnit.MILLISECONDS.sleep(500);
+        new Thread(() -> {
+            dataContainer.write(0);
+        }).start();
+
+    }
+}
+
+@Slf4j(topic = "container")
+class StampedDataContainer {
+    private int data;
+
+    private final StampedLock lock = new StampedLock();
+
+    public StampedDataContainer(int data) {
+        this.data = data;
+    }
+
+    public int read(int readTime) throws InterruptedException {
+        // 乐观锁 获取戳
+        long stamp = lock.tryOptimisticRead();
+        log.debug("optimistic read lock {}", stamp);
+
+        TimeUnit.SECONDS.sleep(1);
+
+        //验证戳成功表明没有写操作，可以安全使用，否则要升级成读锁保证数据安全
+        if (lock.validate(stamp)) {
+            log.debug("optimistic lock finish {}", stamp);
+            return data;
+        }
+
+        log.debug("upgrade to read lock");
+        long readStamp = lock.readLock();
+        log.debug("read lock {}", readStamp);
+        try {
+            TimeUnit.SECONDS.sleep(readTime);
+            log.debug("read finish {}", readStamp);
+            return data;
+        } finally {
+            log.debug("read unlock {}", readStamp);
+            lock.unlockRead(readStamp);
+        }
+    }
+
+    public void write(int data) {
+        log.debug("write start");
+        long stamp = lock.writeLock();
+        log.debug("write lock {}", stamp);
+
+        try {
+            this.data = data;
+            log.debug("write finish {}", stamp);
+        } finally {
+            log.debug("write unlock {}", stamp);
+            lock.unlockWrite(stamp);
+        }
+    }
+}
+
+```
+
+##### StampedLock缺点
+
+- 不支持锁重入
+- 不支持条件变量
+
+#### 4. Semaphore
+
+
+
 提交
 
 ## Lock接口
