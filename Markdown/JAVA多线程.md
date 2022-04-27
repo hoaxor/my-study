@@ -3680,6 +3680,133 @@ public class CountDownLatchTest {
 
 
 
+#### 6. CyclicBarrier
+
+[CyclicBarrier](https://so.csdn.net/so/search?q=CyclicBarrier&spm=1001.2101.3001.7020) 是另外一种多线程并发控制工具。
+
+和 [CountDownLatch](https://so.csdn.net/so/search?q=CountDownLatch&spm=1001.2101.3001.7020) 非常类似，它也可以实现线程间的计数等待，但它的功能比 CountDownLatch 更加复杂且强大。
+
+CyclicBarrier 可以理解为循环栅栏。
+
+```java
+@Slf4j(topic = "cyclicBarrier")
+public class CyclicBarrierTest {
+    public static void main(String[] args) throws InterruptedException {
+        testCyclicBarrier(3);
+//        testCountDownLatch(3);
+    }
+
+    public static void testCyclicBarrier(int loopCount) {
+        //CyclicBarrier 相比 countDownLatch ,可以重用，计数减为零后，计数重置为初始值
+        CyclicBarrier cyclicBarrier = new CyclicBarrier(2, () -> {
+            //计数减为零后会回调此方法
+            log.debug("all task complete");
+        });
+
+        //要确保线程池大小和 cyclicBarrier计数大小相等
+        //若不相等
+        // 假如线程池大小大于CyclicBarrier计数
+        //可能会出现这种情况： task1(执行1s)->task1(执行1s)->task2(执行2s)
+        //没有按预想的task1->task2顺序执行
+        ExecutorService ser = Executors.newFixedThreadPool(2);
+
+        for (int i = 0; i < loopCount; i++) {
+            ser.submit(() -> {
+                log.debug("task1 start");
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    cyclicBarrier.await();//计数减一 : 2 - 1
+                    log.debug("task1 end");
+                } catch (InterruptedException | BrokenBarrierException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            ser.submit(() -> {
+                log.debug("task2 start");
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    cyclicBarrier.await();//计数减一 : 1 - 1
+                    log.debug("task2 end");
+                } catch (InterruptedException | BrokenBarrierException e) {
+                    e.printStackTrace();
+                }
+            });
+
+        }
+
+        ser.shutdown();
+    }
+
+    public static void testCountDownLatch(int loopCount) throws InterruptedException {
+
+        ExecutorService ser = Executors.newFixedThreadPool(2);
+        for (int i = 0; i < loopCount; i++) {
+            //CountDownLatch 不能重用，计数减为零后countDownLatch失效
+            CountDownLatch countDownLatch = new CountDownLatch(2);
+
+            ser.submit(() -> {
+                log.debug("task1 start");
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                countDownLatch.countDown();
+                log.debug("task1 end");
+            });
+
+            ser.submit(() -> {
+                log.debug("task2 start");
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                countDownLatch.countDown();
+                log.debug("task2 end");
+            });
+
+            countDownLatch.await();
+            log.debug("all task complete");
+        }
+
+        ser.shutdown();
+    }
+}
+```
+
+#### 7. 线程安全集合
+
+![image-20220427224011020](\picture\image-20220427224011020.png)
+
+- 遗留的线程安全集合：HashTable、Vector
+
+- 使用Collections装饰的线程安全集合：Collections.synchronizedCollection、synchronizedSet、SynchronizedList、synchronizedMap等
+
+- j.u.c下的各类线程安全集合，里面包含三类关键词：Blocking、CopyOnWrite、Concurrent
+
+  - Blocking大部分实现基于锁，提供用来阻塞的方法
+  - CopyOnWrite之类修改容器修改开销相对较重
+  - Concurrent类型的容器
+    - 内部很多操作使用CAS优化，一般可以提供较高的吞吐量
+    - 弱一致性
+      - 遍历时弱一致性，例如：当利用迭代器遍历时，如果容器发生修改，迭代器仍然可以进行遍历，这时的内容是旧的
+      - 读取弱一致性
+      - 获取大小弱一致性，size操作未必是100%准确
+
+  > 非线程安全类容器，遍历时如果发生了修改会使用fast-fail机制，让遍历立刻失败，抛出ConcurrentModificationException，不再继续遍历
+
+  
+
 提交
 
 ## Lock接口
