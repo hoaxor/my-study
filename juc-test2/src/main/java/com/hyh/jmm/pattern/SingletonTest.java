@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "singleton")
 public class SingletonTest {
-    private static SingletonTest INSTANTCE;
+    private static volatile SingletonTest INSTANTCE;
 
     /**
      * 尽可能缩小同步代码块范围
