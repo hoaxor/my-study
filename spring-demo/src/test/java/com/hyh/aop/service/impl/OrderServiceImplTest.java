@@ -19,4 +19,13 @@ class OrderServiceImplTest {
         System.out.println(orderService.getClass().getName());
         orderService.createOrder();
     }
+
+    @Test
+    public void test2() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+
+        OrderService orderService = (OrderService) context.getBean("orderService");
+        System.out.println(orderService.getClass().getName());
+        System.out.println("test " + orderService.createStudent());
+    }
 }

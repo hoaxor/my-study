@@ -1,6 +1,9 @@
 package com.hyh.aop.service.impl;
 
 import com.hyh.aop.service.OrderService;
+import com.hyh.ioc.setinjection.Student;
+
+import java.util.Date;
 
 /**
  * @author : huang.yaohua
@@ -14,7 +17,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public int deleteOrder() {
-        return 0;
+    public Student createStudent() {
+        System.out.println("createStudent");
+        int i = 1 / 0;
+        return new Student(20, "hyh", new Date());
     }
 }
