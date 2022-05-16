@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans.xsd 
+       http://www.springframework.org/schema/aop 
+       https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--目标对象-->
+    <bean id="orderService" class="com.hyh.aop.service.impl.OrderServiceImpl"/>
+    <!--声明切面对象-->
+    <bean id="myAspect" class="com.hyh.aop.aspcect.MyAspect"/>
+    <!--声明自动代理生成器，目的是创建目标对象的代理 
+        调用aspectJ框架中的功能，寻找spring容器中的所有目标对象，
+        把每个目标对象加入切面类的功能，生成代理
+        生成的代理对象是直接修改的内存中的目标对象
+    -->
+    <aop:aspectj-autoproxy/>
+
+</beans>

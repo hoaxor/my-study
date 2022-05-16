@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--set 注入，spring调用类的set方法，通过set方法，完成属性赋值 
+       1. 基本类型/String set注入如下， 属性未提供set方法时会报错 
+       Student类中无 email属性，但有setEmail方法，可以成功创建对象，并调用setStudent
+       
+       2. 引用类型注入 ref="beanId"
+       -->
+    <bean id="student1" class="com.hyh.ioc.setinjection.Student">
+        <property name="age" value="18"/>
+        <property name="student" value="hyh"/>
+        <property name="date" ref="date"/>
+    </bean>
+
+    <!--构造注入：使用形参name-->
+    <bean id="student2" class="com.hyh.ioc.setinjection.Student">
+        <constructor-arg name="student" value="hyh2"/>
+        <constructor-arg name="age" value="19"/>
+        <constructor-arg name="date" ref="date"/>
+    </bean>
+
+    <!--构造注入：使用index，可以省略index，但是入参顺序要求和构造函数一致-->
+    <bean id="student3" class="com.hyh.ioc.setinjection.Student">
+        <constructor-arg index="0" value="20"/>
+        <constructor-arg index="1" value="hyh3"/>
+        <constructor-arg name="date" ref="date"/>
+    </bean>
+
+    <!--引用类型自动注入   byName 引用类型的属性的名称和bean的ID相同且类型相同 -->
+    <bean id="student4" class="com.hyh.ioc.setinjection.Student" autowire="byName">
+        <property name="age" value="21"/>
+        <property name="student" value="hyh4"/>
+    </bean>
+
+    <!--引用类型自动注入   byType 引用类型的属性的classA和bean的classB同源 -->
+    <bean id="student5" class="com.hyh.ioc.setinjection.Student" autowire="byType">
+        <property name="age" value="22"/>
+        <property name="student" value="hyh5"/>
+    </bean>
+
+    <bean id="date" class="java.util.Date">
+        <property name="time" value="123132213123"/>
+    </bean>
+
+    <bean id="school" class="com.hyh.ioc.setinjection.School">
+        <property name="name" value="CQUPT"/>
+    </bean>
+</beans>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--    声明对象，
+            id 自定义对象名称
+            class 类的全限定名，spring通过反射机制创建对象
+            spring 根据id，class创建对象，把对象放入到spring的一个map对象，
+            map.put(id, 对象 )
+    -->
+    <bean id="myService" class="com.hyh.ioc.setinjection.service.impl.MyServiceImpl"/>
+</beans>

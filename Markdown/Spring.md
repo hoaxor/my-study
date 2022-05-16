@@ -1,24 +1,171 @@
-# Spring5
+# Spring
+
+
 
 ## Spring 框架概述
 
 解决企业开发的复杂性
 
-
+轻量、面向接口编程，解耦、方便集成各种优秀框架（提供对各种优秀框架的直接支持，简化框架的使用）
 
 
 
 ## Spring 核心
 
-IOC
+### IOC(inversion of control)
 
-控制反转，创建对象的过程交给Spring。
+控制反转，创建、注入对象的过程交给Spring。
 
-AOP
+把对象的创建、属性赋值、生命周期交给代码之外的容器管理
 
-切面编程，在不修改源码的前提下进行功能增强。
+#### DI(dependency injection)
+
+IoC的一种技术实现，程序员只需要提供要使用的对象的名称就行了，对象如何创建，如何从容器中查找，获取都由容器内部自己实现。
+
+**spring使用的DI实现IoC**
 
 
+
+标准配置文件
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!--名称空间-->
+<!--xml 约束文件地址 http://www.springframework.org/schema/beans/spring-beans.xsd-->
+<beans xmlns="http://www.springframework.org/schema/beans"       
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+</beans>
+```
+
+
+
+##### DI给属性赋值
+
+###### 基于XML的DI
+
+set注入：
+
+```xml
+<!--set 注入，spring调用类的set方法，通过set方法，完成属性赋值 
+   1. 基本类型/String set注入如下， 属性未提供set方法时会报错 
+   Student类中无 email属性，但有setEmail方法，可以成功创建对象，并调用setStudent
+   
+   2. 引用类型注入  ref="beanId"
+   -->
+<bean id="student1" class="com.hyh.di.setinjection.Student">
+    <property name="age" value="18"/>
+    <property name="student" value="hyh"/>
+    <property name="email" value="111@qq.com"/>
+    <property name="date" ref="date"/>
+</bean>
+
+<bean id="date" class="java.util.Date">
+    <property name="time" value="123132213123"/>
+</bean>
+```
+
+构造注入：
+
+```xml
+    <!--构造注入：使用形参name-->
+    <bean id="student2" class="com.hyh.di.setinjection.Student">
+        <constructor-arg name="student" value="hyh2"/>
+        <constructor-arg name="age" value="19"/>
+        <constructor-arg name="date" ref="date"/>
+    </bean>
+
+    <!--构造注入：使用index，可以省略index，但是入参顺序要求和构造函数一致-->
+    <bean id="student3" class="com.hyh.di.setinjection.Student">
+        <constructor-arg index="0" value="20"/>
+        <constructor-arg index="1" value="hyh3"/>
+        <constructor-arg name="date" ref="date"/>
+    </bean>
+    <bean id="date" class="java.util.Date">
+        <property name="time" value="123132213123"/>
+    </bean>
+```
+
+引用类型自动注入：
+
+byName(类的引用类型的属性名和和bean的Id相同且类型相同时，可以使用byName自动注入)
+
+```xml
+    <!--引用类型自动注入   byName 引用类型的属性的名称和bean的ID相同且类型相同 -->
+    <bean id="student4" class="com.hyh.di.setinjection.Student" autowire="byName">
+        <property name="age" value="21"/>
+        <property name="student" value="hyh4"/>
+    </bean>
+
+    <bean id="date" class="java.util.Date">
+        <property name="time" value="123132213123"/>
+    </bean>
+```
+
+byType(类中引用类型的数据类型和bean的class是同源的，可以使用byType自动注入)
+
+```xml
+    <!--引用类型自动注入   byType 引用类型的属性的classA和bean的classB同源
+    (classA==classB 或 classA继承于classB 或 classB继承于classA)-->
+    <bean id="student5" class="com.hyh.di.setinjection.Student" autowire="byType">
+        <property name="age" value="22"/>
+        <property name="student" value="hyh5"/>
+    </bean>
+
+    <bean id="date" class="java.util.Date">
+        <property name="time" value="123132213123"/>
+    </bean>
+
+    <bean id="aEmail" class="java.lang.String">
+        <constructor-arg index="0" value="22@qq.com"/>
+    </bean>
+```
+
+
+
+###### 基于注解的DI
+
+![image-20220515203846645](\picture\image-20220515203846645.png)
+
+@AutoWired
+
+spring框架提供，给引用类型赋值，支持byName，byType。默认byType
+
+![image-20220515220222524](\picture\image-20220515220222524.png)
+
+@Resouce
+
+jdk提供，默认使用byName，若byName查找bean失败则byType查找
+
+**2.ioc操作两部分：**
+
+（1）ioc的配置文件方式
+
+（2）ioc的注解方式
+
+
+
+***\*3.\**\**ioc\**\**底层原理使用技术\****
+
+（1）xml配置文件
+
+（2）dom4j解析xml
+
+（3）工厂设计模式
+
+（4）反射
+
+### AOP（Aspect Oriented Programming）
+
+面向切面编程，在不修改源码的前提下进行功能增强。
+
+![image-20220515223452360](\picture\image-20220515223452360.png)
+
+![image-20220515223556530](\picture\image-20220515223556530.png)
+
+https://www.jianshu.com/p/2e8409bc8c3b
 
 ## Spring事务
 
