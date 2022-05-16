@@ -13,7 +13,8 @@ class MyServiceImplTest {
 
     @Test
     public void testPrint() {
-        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+        ApplicationContext context =
+                new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         MyService ser = context.getBean(MyService.class);
         ser.print("test");
     }
