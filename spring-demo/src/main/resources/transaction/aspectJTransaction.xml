@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <context:property-placeholder location="classpath:transaction/jdbc.properties"/>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <!-- 事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--声明业务方法事务属性（隔离级别、传播行为、超时时间）-->
+    <tx:advice id="serviceAdvice">
+        <tx:attributes>
+            <!-- name 业务方法名称：1.使用方法全名、2.使用带部分通配符的方法名、3.使用“*”           -->
+            <tx:method name="get*" isolation="DEFAULT" propagation="REQUIRED" timeout="-1"
+                       rollback-for="java.lang.NullPointerException,java.lang.IndexOutOfBoundsException"/>
+            <tx:method name="set*" isolation="DEFAULT" propagation="REQUIRES_NEW" timeout="-1"
+                       rollback-for="java.lang.NullPointerException,java.lang.IndexOutOfBoundsException"/>
+            <!--除上述之外的方法使用以下事务配置-->
+            <tx:method name="*" isolation="DEFAULT" propagation="REQUIRES_NEW" timeout="-1"
+                       rollback-for="java.lang.NullPointerException,java.lang.IndexOutOfBoundsException"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--切入点表达式：表明包中的哪些类、类中的方法参加事务-->
+    <aop:config>
+        <!--   id切入点表达式的名称   唯一的  -->
+        <aop:pointcut id="servicePointcut" expression="execution(* *..transaction.service..*.*(..))"/>
+        <!--关联切入点表达式和事务通知-->
+        <aop:advisor advice-ref="serviceAdvice" pointcut-ref="servicePointcut"/>
+    </aop:config>
+</beans>
