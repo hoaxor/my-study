@@ -398,3 +398,128 @@ SQL的标准事务隔离级别：
 
 事务1查询A<5的数据,由于事务2插入了一条A=4的数据,导致事务1两次查询得到的结果不一样
 
+
+
+#### spring事务管理器
+
+
+
+![image-20220517232018869](\picture\image-20220517232018869.png)
+
+#### 事务管理器工作方式
+
+![image-20220517232246845](\picture\image-20220517232246845.png)
+
+- spring事务使用的AOP的环绕通知
+
+环绕通知：可以在目标方法执行前后都能增强功能
+
+![image-20220517232745350](\picture\image-20220517232745350.png)
+
+
+
+#### 事务定义接口（TransactionDefinition）
+
+##### 隔离级别
+
+- 默认（使用数据库默认事务隔离级别mysql 默认 可重复读，oralce默认读已提交）
+
+- 读未提交（read uncommitted）
+
+- 读已提交
+
+- 可重复读
+
+- 串行化
+
+##### 传播行为
+
+`REQUIRED`（有事务则加入，没有则创建）是spring事务的默认方式
+
+`REQUIRES_NEW`（新事务，有事务就创建新事务）
+
+`NESTED`（嵌套事务，有事务就创建子事务，子事务不会影响外层事务，外层事务会影响子事务）
+
+`SUPPORTS`（支持事务，有没有都可以）这个传播行为和不写没多大区别，以后有这需求，可以不用写`@Transactional`
+
+`NOT_SUPPORTED`（不支持事务，有事务也是以非事务方式执行）
+
+`MANDATORY`（必须有事务，没有就抛异常）
+
+`NEVER`（不可能有事务，有事务就抛异常）
+
+![image-20220517231935155](\picture\image-20220517231935155.png)
+
+
+
+https://blog.csdn.net/weixin_43072970/article/details/107756796
+
+##### 事务超时（单位秒）
+
+超时时间，默认-1
+
+表示一个事务最长的执行时间，超时则回滚事务
+
+#### 使用Transactional控制事务
+
+![image-20220518223434591](\picture\image-20220518223434591.png)
+
+![image-20220518223530609](\picture\image-20220518223530609.png)
+
+jdbcTemplate、mybatis使用DataSourceTransactionManager
+
+hibernate使用HibernateTransactionManager
+
+
+
+![image-20220518223913589](\picture\image-20220518223913589.png)
+
+事务控制模式：声明式、编程式
+
+![image-20220518224752984](\picture\image-20220518224752984.png)
+
+#### 使用AspectJ框架控制事务
+
+![image-20220518232102954](\picture\image-20220518232102954.png)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <context:property-placeholder location="classpath:transaction/jdbc.properties"/>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <!-- 事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--声明业务方法事务属性（隔离级别、传播行为、超时时间）-->
+    <tx:advice id="serviceAdvice">
+        <tx:attributes>
+            <!-- name 业务方法名称：1.使用方法全名、2.使用带部分通配符的方法名、3.使用“*”           -->
+            <tx:method name="get*" isolation="DEFAULT" propagation="REQUIRED" timeout="-1"
+                       rollback-for="java.lang.NullPointerException,java.lang.IndexOutOfBoundsException"/>
+            <tx:method name="set*" isolation="DEFAULT" propagation="REQUIRES_NEW" timeout="-1"
+                       rollback-for="java.lang.NullPointerException,java.lang.IndexOutOfBoundsException"/>
+            <!--除上述之外的方法使用以下事务配置-->
+            <tx:method name="*" isolation="DEFAULT" propagation="REQUIRES_NEW" timeout="-1"
+                       rollback-for="java.lang.NullPointerException,java.lang.IndexOutOfBoundsException"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--切入点表达式：表明包中的哪些类、类中的方法参加事务-->
+    <aop:config>
+        <!--   id切入点表达式的名称   唯一的  -->
+        <aop:pointcut id="servicePointcut" expression="execution(* *..transaction.service..*.*(..))"/>
+        <!--关联切入点表达式和事务通知-->
+        <aop:advisor advice-ref="serviceAdvice" pointcut-ref="servicePointcut"/>
+    </aop:config>
+</beans>
+```
+
