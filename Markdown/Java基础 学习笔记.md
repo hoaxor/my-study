@@ -1092,7 +1092,9 @@ Pair<String>[] ps = (Pair<String>[]) new Pair[2];
 
 如果仔细观察，可以发现编译器对所有可变泛型参数都会发出警告，除非确认完全没有问题，才可以用`@SafeVarargs`消除警告。
 
+可以声明带泛型的数组，但不能直接创建带泛型的数组，必须强制转型；
 
+可以通过`Array.newInstance(Class<T>, int)`创建`T[]`数组，需要强制转型；
 
 ### 集合
 
@@ -1145,8 +1147,85 @@ Map 接口 键值对的集合 （双列集合）
 
 具体实现唯一性的比较过程：存储元素首先会使用hash()算法函数生成一个int类型hashCode散列值，然后已经的所存储的元素的hashCode值比较，如果hashCode不相等，则所存储的两个对象一定不相等，此时存储当前的新的hashCode值处的元素对象；如果hashCode相等，存储元素的对象还是不一定相等，此时会调用equals()方法判断两个对象的内容是否相等，如果内容相等，那么就是同一个对象，无需存储；如果比较的内容不相等，那么就是不同的对象，就该存储了，此时就要采用哈希的解决地址冲突算法（链表法），在当前hashCode值处类似一个新的链表， 在同一个hashCode值的后面存储存储不同的对象，这样就保证了元素的唯一性。
 
+**LinkedHashSet**底层数据结构采用链表和哈希表共同实现，链表保证了元素的顺序与存储顺序一致，哈希表保证了元素的唯一性。线程不安全，效率高。
 
-### HashCode与Equals
+ **TreeSet**底层数据结构采用二叉树来实现，元素唯一且已经排好序；唯一性同样需要重写hashCode和equals()方法，二叉树结构保证了元素的有序性。根据构造方法不同，分为自然排序（无参构造）和比较器排序（有参构造），自然排序要求元素必须实现Compareable接口，并重写里面的compareTo()方法，元素通过比较返回的int值来判断排序序列，返回0说明两个对象相同，不需要存储；比较器排需要在TreeSet初始化是时候传入一个实现Comparator接口的比较器对象，或者采用匿名内部类的方式new一个Comparator对象，重写里面的compare()方法；
+
+原文链接：https://blog.csdn.net/feiyanaffection/article/details/81394745
+
+
+
+#### Map详解：
+
+- Map 没有继承 Collection 接口， Map 提供 key 到 value 的映射
+
+![这里写图片描述](https://img-blog.csdn.net/20180803205119738?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ZlaXlhbmFmZmVjdGlvbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+HashMap和HashTable的比较：
+
+![这里写图片描述](https://img-blog.csdn.net/20180803205546704?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ZlaXlhbmFmZmVjdGlvbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+TreeMap：
+
+![这里写图片描述](https://img-blog.csdn.net/20180803205736499?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ZlaXlhbmFmZmVjdGlvbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+Map的其它类：
+IdentityHashMap和HashMap的具体区别，IdentityHashMap使用 == 判断两个key是否相等，而HashMap使用的是equals方法比较key值。有什么区别呢？
+对于==，如果作用于基本数据类型的变量，则直接比较其存储的 “值”是否相等； 如果作用于引用类型的变量，则比较的是所指向的对象的地址。
+![这里写图片描述](https://img-blog.csdn.net/20180803210616278?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ZlaXlhbmFmZmVjdGlvbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+原文链接：https://blog.csdn.net/feiyanaffection/article/details/81394745
+
+#### Queue
+
+队列`Queue`实现了一个先进先出（FIFO）的数据结构：
+
+- 通过`add()`/`offer()`方法将元素添加到队尾；
+- 通过`remove()`/`poll()`从队首获取元素并删除；
+- 通过`element()`/`peek()`从队首获取元素但不删除。
+
+#### Deque
+
+`Deque`实现了一个双端队列（Double Ended Queue），它可以：
+
+- 将元素添加到队尾或队首：`addLast()`/`offerLast()`/`addFirst()`/`offerFirst()`；
+- 从队首／队尾获取元素并删除：`removeFirst()`/`pollFirst()`/`removeLast()`/`pollLast()`；
+- 从队首／队尾获取元素但不删除：`getFirst()`/`peekFirst()`/`getLast()`/`peekLast()`；
+- 总是调用`xxxFirst()`/`xxxLast()`以便与`Queue`的方法区分开；
+- 避免把`null`添加到队列。
+
+#### Stack
+
+栈（Stack）是一种后进先出（LIFO）的数据结构，操作栈的元素的方法有：
+
+- 把元素压栈：`push(E)`；
+- 把栈顶的元素“弹出”：`pop(E)`；
+- 取栈顶元素但不弹出：`peek(E)`。
+
+在Java中，我们用`Deque`可以实现`Stack`的功能，注意只调用`push()`/`pop()`/`peek()`方法，避免调用`Deque`的其他方法。
+
+最后，不要使用遗留类`Stack`。
+
+#### Iterator
+
+`Iterator`是一种抽象的数据访问模型。使用`Iterator`模式进行迭代的好处有：
+
+- 对任何集合都采用同一种访问模型；
+- 调用者对集合内部结构一无所知；
+- 集合类返回的`Iterator`对象知道如何迭代。
+
+Java提供了标准的迭代器模型，即集合类实现`java.util.Iterable`接口，返回`java.util.Iterator`实例。
+
+#### Collections
+
+`Collections`类提供了一组工具方法来方便使用集合类：
+
+- 创建空集合；
+- 创建单元素集合；
+- 创建不可变集合；
+- 排序／洗牌等操作。
+
+
+#### HashCode与Equals
 
 `equals()`方法要求我们必须满足以下条件：
 
@@ -1168,5 +1247,311 @@ Map 接口 键值对的集合 （双列集合）
 
 实现`hashCode()`方法可以通过`Objects.hashCode()`辅助方法实现。
 
-`hashCode()`方法
+- 如果两个对象相等，则两个对象的`hashCode()`必须相等；
+- 如果两个对象不相等，则两个对象的`hashCode()`尽量不要相等。
+
+
+
+## I/O
+
+### InputStream / OutputStream
+
+![img](https://img-blog.csdn.net/20180823102955356?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3OTM3NTM3/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+![img](https://img-blog.csdn.net/20180823103003386?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3OTM3NTM3/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+IO流以`byte`（字节）为最小单位，因此也称为*字节流*。例如，我们要从磁盘读入一个文件，包含6个字节，就相当于读入了6个字节的数据：
+
+```ascii
+╔════════════╗
+║   Memory   ║
+╚════════════╝
+       ▲
+       │0x48
+       │0x65
+       │0x6c
+       │0x6c
+       │0x6f
+       │0x21
+ ╔═══════════╗
+ ║ Hard Disk ║
+ ╚═══════════╝
+```
+
+这6个字节是按顺序读入的，所以是输入字节流。
+
+反过来，我们把6个字节从内存写入磁盘文件，就是输出字节流：
+
+```ascii
+╔════════════╗
+║   Memory   ║
+╚════════════╝
+       │0x21
+       │0x6f
+       │0x6c
+       │0x6c
+       │0x65
+       │0x48
+       ▼
+ ╔═══════════╗
+ ║ Hard Disk ║
+ ╚═══════════╝
+```
+
+### Reader / Writer
+
+![img](https://img-blog.csdn.net/20180823103413565?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3OTM3NTM3/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+![img](https://img-blog.csdn.net/20180823103439209?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3OTM3NTM3/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+如果我们需要读写的是字符，并且字符不全是单字节表示的ASCII字符，那么，按照`char`来读写显然更方便，这种流称为*字符流*。
+
+Java提供了`Reader`和`Writer`表示字符流，字符流传输的最小数据单位是`char`。
+
+### 同步和异步
+
+同步IO是指，读写IO时代码必须等待数据返回后才继续执行后续代码，它的优点是代码编写简单，缺点是CPU执行效率低。
+
+而异步IO是指，读写IO时仅发出请求，然后立刻执行后续代码，它的优点是CPU执行效率高，缺点是代码编写复杂。
+
+Java标准库的包`java.io`提供了同步IO，而`java.nio`则是异步IO。
+
+### File对象
+
+Java标准库的`java.io.File`对象表示一个文件或者目录：
+
+- 创建`File`对象本身不涉及IO操作；
+- 可以获取路径／绝对路径／规范路径：`getPath()`/`getAbsolutePath()`/`getCanonicalPath()`；
+- 可以获取目录的文件和子目录：`list()`/`listFiles()`；
+- 可以创建或删除文件和目录。
+
+### InputStream
+
+Java标准库的`java.io.InputStream`定义了所有输入流的超类：
+
+- `FileInputStream`实现了文件流输入；
+- `ByteArrayInputStream`在内存中模拟一个字节流输入。
+
+总是使用`try(resource)`来保证`InputStream`正确关闭。
+
+### OutputStream
+
+Java标准库的`java.io.OutputStream`定义了所有输出流的超类：
+
+- `FileOutputStream`实现了文件流输出；
+- `ByteArrayOutputStream`在内存中模拟一个字节流输出。
+
+某些情况下需要手动调用`OutputStream`的`flush()`方法来强制输出缓冲区。
+
+总是使用`try(resource)`来保证`OutputStream`正确关闭。
+
+### Filter模式
+
+Java的IO标准库使用Filter模式为`InputStream`和`OutputStream`增加功能：
+
+- 可以把一个`InputStream`和任意个`FilterInputStream`组合；
+- 可以把一个`OutputStream`和任意个`FilterOutputStream`组合。
+
+Filter模式可以在运行期动态增加功能（又称Decorator模式）。
+
+
+
+### 序列化
+
+`Serializable`接口没有定义任何方法，它是一个空接口。我们把这样的空接口称为“标记接口”（Marker Interface），实现了标记接口的类仅仅是给自身贴了个“标记”，并没有增加任何方法。
+
+反序列化时，由JVM直接构造出Java对象，不调用构造方法，构造方法内部的代码，在反序列化时根本不可能执行。
+
+可设置`serialVersionUID`作为版本号（非必需）；
+
+#### 安全性
+
+因为Java的序列化机制可以导致一个实例能直接从`byte[]`数组创建，而不经过构造方法，因此，它存在一定的安全隐患。一个精心构造的`byte[]`数组被反序列化后可以执行特定的Java代码，从而导致严重的安全漏洞。
+
+实际上，Java本身提供的基于对象的序列化和反序列化机制既存在安全性问题，也存在兼容性问题。更好的序列化方法是通过JSON这样的通用数据结构来实现，只输出基本类型（包括String）的内容，而不存储任何与代码相关的信息。
+
+
+
+### Reader
+
+`Reader`定义了所有字符输入流的超类：
+
+- `FileReader`实现了文件字符流输入，使用时需要指定编码；
+- `CharArrayReader`和`StringReader`可以在内存中模拟一个字符流输入。
+
+`Reader`是基于`InputStream`构造的：可以通过`InputStreamReader`在指定编码的同时将任何`InputStream`转换为`Reader`。
+
+总是使用`try (resource)`保证`Reader`正确关闭。
+
+### Writer
+
+`Writer`定义了所有字符输出流的超类：
+
+- `FileWriter`实现了文件字符流输出；
+- `CharArrayWriter`和`StringWriter`在内存中模拟一个字符流输出。
+
+使用`try (resource)`保证`Writer`正确关闭。
+
+`Writer`是基于`OutputStream`构造的，可以通过`OutputStreamWriter`将`OutputStream`转换为`Writer`，转换时需要指定编码。
+
+
+
+### PrintStream/PrintWriter
+
+`PrintStream`是一种能接收各种数据类型的输出，打印数据时比较方便：
+
+- `System.out`是标准输出；
+- `System.err`是标准错误输出。
+
+`PrintWriter`是基于`Writer`的输出。
+
+
+
+### Files
+
+`Files`提供的读写方法，受内存限制，只能读写小文件，例如配置文件等，不可一次读入几个G的大文件。读写大型文件仍然要使用文件流，每次只读写一部分文件内容。
+
+对于简单的小文件读写操作，可以使用`Files`工具类简化代码。
+
+
+
+## 日期
+
+### 本地化
+
+在计算机中，通常使用`Locale`表示一个国家或地区的日期、时间、数字、货币等格式。`Locale`由`语言_国家`的字母缩写构成，例如，`zh_CN`表示中文+中国，`en_US`表示英文+美国。语言使用小写，国家使用大写。
+
+对于日期来说，不同的Locale，例如，中国和美国的表示方式如下：
+
+- zh_CN：2016-11-30
+- en_US：11/30/2016
+
+### Date
+
+计算机表示的时间是以整数表示的时间戳存储的，即Epoch Time，Java使用`long`型来表示以毫秒为单位的时间戳，通过`System.currentTimeMillis()`获取当前时间戳。
+
+Java有两套日期和时间的API：
+
+- 旧的Date、Calendar和TimeZone；
+- 新的LocalDateTime、ZonedDateTime、ZoneId等。
+
+分别位于`java.util`和`java.time`包中。
+
+
+
+### Java8 日期API
+
+Java 8引入了新的日期和时间API，它们是不变类，默认按ISO 8601标准格式化和解析；
+
+使用`LocalDateTime`可以非常方便地对日期和时间进行加减，或者调整日期和时间，它总是返回新对象；
+
+使用`isBefore()`和`isAfter()`可以判断日期和时间的先后；
+
+使用`Duration`和`Period`可以表示两个日期和时间的“区间间隔”。
+
+注意ISO 8601规定的日期和时间分隔符是`T`。标准格式如下：
+
+- 日期：yyyy-MM-dd
+- 时间：HH:mm:ss
+- 带毫秒的时间：HH:mm:ss.SSS
+- 日期和时间：yyyy-MM-dd'T'HH:mm:ss
+- 带毫秒的日期和时间：yyyy-MM-dd'T'HH:mm:ss.SSS、、
+
+```java
+package org.hyh.date;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * @author : huang.yaohua
+ * @date : 2022/5/23 17:33
+ */
+public class LocalDateTimeTest {
+    public static void main(String[] args) throws InterruptedException {
+        // 日期
+        LocalDate localDate = LocalDate.now();
+        // 时间
+        LocalTime localTime = LocalTime.now();
+        TimeUnit.SECONDS.sleep(1);
+        // 时间 + 日期
+        LocalDateTime localDateTime = LocalDateTime.now();
+        System.out.println(localDate);
+        System.out.println(localTime);
+        System.out.println(localDateTime);
+        
+
+        // 转换到日期
+        System.out.println(localDateTime.toLocalDate());
+        // 转换成时间
+        System.out.println(localDateTime.toLocalTime());
+
+        // 自定义时间
+        LocalDateTime localDateTime1 = LocalDateTime.of(2022, 5, 23, 17, 40);
+        System.out.println(localDateTime1);
+        // 因为严格按照ISO 8601的格式，因此，将字符串转换为LocalDateTime就可以传入标准格式：
+        // 注意ISO 8601规定的日期和时间分隔符是T。标准格式如下：
+        LocalDateTime parse = LocalDateTime.parse("2022-05-31T17:41:23");
+        System.out.println(parse);
+        // 链式调用
+        // 加0天 减两小时，设置月份为6
+        // 调整月份时，会相应地调整日期，即把2022-05-31的月份调整为6时，日期也自动变为30。6月只有30号
+        System.out.println(parse.plusDays(0).minusHours(2).withMonth(6));
+        // 本月第一天0:00时刻:
+        System.out.println(LocalDate.now().withDayOfMonth(1).atStartOfDay());
+        // 本月最后一天
+        System.out.println(LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
+        // 下月第1天:
+        LocalDate nextMonthFirstDay = LocalDate.now().with(TemporalAdjusters.firstDayOfNextMonth());
+        System.out.println(nextMonthFirstDay);
+        // 本月第一个周一
+        System.out.println(LocalDate.now().with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY)));
+    }
+}
+
+```
+
+
+
+`ZonedDateTime`是带时区的日期和时间，可用于时区转换；
+
+`ZonedDateTime`和`LocalDateTime`可以相互转换。
+
+```java
+package org.hyh.date;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+/**
+ * @author : huang.yaohua
+ * @date : 2022/5/23 18:05
+ */
+public class ZonedDateTimeTest {
+    public static void main(String[] args) {
+        ZonedDateTime now = ZonedDateTime.now();
+        System.out.println(now);
+
+        //北京时间转为纽约时间
+        LocalDateTime now1 = LocalDateTime.now();
+        ZonedDateTime asia = now1.atZone(ZoneId.of("Asia/Shanghai"));
+        System.out.println(asia);
+        System.out.println(asia.withZoneSameInstant(ZoneId.of("America/New_York")));
+    }
+    
+    // 某航线从北京飞到纽约需要13小时20分钟，请根据北京起飞日期和时间计算到达纽约的当地日期和时间。
+    static LocalDateTime calculateArrivalAtNY(LocalDateTime bj, int h, int m) {
+        return bj.atZone(ZoneId.of("Asia/Shanghai"))
+                .withZoneSameInstant(ZoneId.of("America/New_York"))
+                .plusHours(h).plusMinutes(m).toLocalDateTime();
+    }
+}
+
+```
 
