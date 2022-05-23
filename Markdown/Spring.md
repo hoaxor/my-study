@@ -139,6 +139,10 @@ spring框架提供，给引用类型赋值，支持byName，byType。默认byTyp
 
 jdk提供，默认使用byName，若byName查找bean失败则byType查找
 
+@Value
+
+基本数据类型+string，设置初始值
+
 **2.ioc操作两部分：**
 
 （1）ioc的配置文件方式
@@ -147,7 +151,7 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
 
 
 
-***\*3.\**\**ioc\**\**底层原理使用技术\****
+**IoC容器底层原理使用技术**
 
 （1）xml配置文件
 
@@ -156,6 +160,23 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
 （3）工厂设计模式
 
 （4）反射
+
+![image-20220522192527671](\picture\image-20220522192527671.png)
+
+1. BeanFactory是基础，BeanFactory和它的子接口定义的API满足了spring环境中对bean管理和配置的需求；
+2. ApplicationContext是扩展，以BeanFactory为主线，通过继承的方式综合了环境、国际化、资源、事件等多条支线，自己又规定了一些扩展服务（如返回context的id，应用名称等），而所有支线都以bean服务为基础；
+![这里写图片描述](https://img-blog.csdn.net/20180812101356107?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2JvbGluZ19jYXZhbHJ5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+原文链接：https://blog.csdn.net/boling_cavalry/article/details/81603303
+
+![image-20220522194502291](\picture\image-20220522194502291.png)
+
+![image-20220522194749268](\picture\image-20220522194749268.png)
+
+![image-20220522195128373](\picture\image-20220522195128373.png)
+
+
+
+![image-20220522195307174](\picture\image-20220522195307174.png)
 
 ### AOP（Aspect Oriented Programming）
 
