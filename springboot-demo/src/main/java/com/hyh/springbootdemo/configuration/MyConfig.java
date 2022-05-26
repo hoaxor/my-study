@@ -1,12 +1,17 @@
 package com.hyh.springbootdemo.configuration;
 
+import com.hyh.springbootdemo.model.Baby;
+import com.hyh.springbootdemo.model.Movie;
 import com.hyh.springbootdemo.model.MyModel;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 
 
@@ -19,7 +24,7 @@ import java.util.Date;
  *
  * @author MLY
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration(proxyBeanMethods = true)
 @Import({MyModel.class, Date.class})
 //@Component
 public class MyConfig {
@@ -36,6 +41,24 @@ public class MyConfig {
     @Bean
     public Integer integer() {
         return 1;
+    }
+
+    @Bean
+    public Baby baby() {
+        return new Baby();
+    }
+
+    @Bean
+    public MyModel myModel() {
+        return new MyModel();
+    }
+
+    @Bean
+    @ConditionalOnBean(name = "baby")
+    public Movie movie(Baby baby) {
+        Movie movie = new Movie();
+        movie.setStaff(Arrays.asList(baby));
+        return movie;
     }
 }
 

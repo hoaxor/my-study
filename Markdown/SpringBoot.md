@@ -155,3 +155,160 @@ ConditionalOnJava (org.springframework.boot.autoconfigure.condition)
 
 
 
+```java
+```
+
+
+
+### @ImportResource
+
+导入beans.xml
+
+
+
+### @ConfigurationProperties + @EnableConfigurationProperties
+
+```java
+//使用以下两种方式开启配置类
+//@ConfigurationPropertiesScan(basePackages = "com.hyh.springbootdemo.model")
+//@EnableConfigurationProperties(Car.class)
+public class MyService{
+    
+}
+
+
+package com.hyh.springbootdemo.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+
+// 单独使用ConfigurationProperties注解，此类不会被加载到容器
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ConfigurationProperties(prefix = "car")
+public class Car {
+    private String brand;
+
+    private double price;
+
+}
+
+```
+
+
+
+### @ConfigurationProperties + @Component
+
+```java
+
+// 使用ConfigurationProperties + Component注解将配置类加载到容器
+// 可以获取到配置文件中的值
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ConfigurationProperties(prefix = "car")
+public class Car {
+    private String brand;
+
+    private double price;
+
+}
+
+```
+
+
+
+### @SpringBootApplication
+
+```java
+
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(
+    excludeFilters = {@Filter(
+    type = FilterType.CUSTOM,
+    classes = {TypeExcludeFilter.class}
+), @Filter(
+    type = FilterType.CUSTOM,
+    classes = {AutoConfigurationExcludeFilter.class}
+)}
+)
+public @interface SpringBootApplication {
+    @AliasFor(
+        annotation = EnableAutoConfiguration.class
+    )
+    Class<?>[] exclude() default {};
+
+    @AliasFor(
+        annotation = EnableAutoConfiguration.class
+    )
+    String[] excludeName() default {};
+
+    @AliasFor(
+        annotation = ComponentScan.class,
+        attribute = "basePackages"
+    )
+    String[] scanBasePackages() default {};
+
+    @AliasFor(
+        annotation = ComponentScan.class,
+        attribute = "basePackageClasses"
+    )
+    Class<?>[] scanBasePackageClasses() default {};
+
+    @AliasFor(
+        annotation = ComponentScan.class,
+        attribute = "nameGenerator"
+    )
+    Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
+
+    @AliasFor(
+        annotation = Configuration.class
+    )
+    boolean proxyBeanMethods() default true;
+}
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Configuration
+@Indexed
+public @interface SpringBootConfiguration {
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@Documented
+@Repeatable(ComponentScans.class)
+public @interface ComponentScan {
+    
+}
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@AutoConfigurationPackage
+@Import({AutoConfigurationImportSelector.class})
+public @interface EnableAutoConfiguration {
+}
+```
+
+
+
+## 单元测试
+
+### JUnit5
+
+官方文档
+
+https://junit.org/junit5/docs/current/user-guide/
