@@ -1,6 +1,10 @@
 spring:
   mvc:
     static-path-pattern: /static/**
+  web:
+    resources:
+      # 设置false禁用静态资源规则
+      add-mappings: true
 
 
 hyh:

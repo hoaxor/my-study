@@ -946,7 +946,7 @@ public class WebMvcAutoConfiguration {
 
 ```
 
-
+springMVC配置类适配器
 
 ```java
     @Configuration(
@@ -957,6 +957,7 @@ public class WebMvcAutoConfiguration {
     @Order(0)
     public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer, ServletContextAware {
         
+    }
 ```
 
 和配置文件WebMvcProperties、WebProperties进行了绑定
@@ -982,9 +983,61 @@ public WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcPropert
         }
 ```
 
+配置静态资源处理的默认规则
 
+```java
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            if (!this.resourceProperties.isAddMappings()) {
+                logger.debug("Default resource handling disabled");
+            } else {
+                // 添加webjars访问处理规则
+                this.addResourceHandler(registry, "/webjars/**", "classpath:/META-INF/resources/webjars/");
+                // 添加静态资源访问处理规则
+                this.addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(), (registration) -> {
+                    registration.addResourceLocations(this.resourceProperties.getStaticLocations());
+                    if (this.servletContext != null) {
+                        ServletContextResource resource = new ServletContextResource(this.servletContext, "/");
+                        registration.addResourceLocations(new Resource[]{resource});
+                    }
 
+                });
+            }
+        }
+```
 
+欢迎页处理规则映射
+
+```java
+    WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders, ApplicationContext applicationContext, Resource welcomePage, String staticPathPattern) {
+        if (welcomePage != null && "/**".equals(staticPathPattern)) {
+            logger.info("Adding welcome page: " + welcomePage);
+            this.setRootViewName("forward:index.html");
+        } else if (this.welcomeTemplateExists(templateAvailabilityProviders, applicationContext)) {
+            logger.info("Adding welcome page template: index");
+            this.setRootViewName("index");
+        }
+
+    }
+```
+
+### 请求参数映射
+
+REST
+
+参考：
+
+https://blog.csdn.net/qq_21383435/article/details/80032375?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7EPayColumn-1-80032375-blog-111591122.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7EPayColumn-1-80032375-blog-111591122.pc_relevant_default&utm_relevant_index=1
+
+提出时间：2000年。 属性：一种软件架构风格。（以Web为平台的。web服务的架构风格，前后端接口时候用到。）
+
+外文名：Representational State Transfer，简称REST。 中文名：表现层状态转移。
+
+URL中只使用名词来定位资源，用HTTP协议里的动词（GET、POST、PUT、DELETE）来实现资源的增删改查操作。
+
+GET    用来获取资源，
+POST  用来新建资源（也可以用于更新资源），
+PUT    用来更新资源，
+DELETE  用来删除资源
 
 ## 单元测试
 
