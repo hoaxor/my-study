@@ -4,11 +4,10 @@ import com.hyh.springbootdemo.model.Baby;
 import com.hyh.springbootdemo.model.Movie;
 import com.hyh.springbootdemo.model.MyModel;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -35,6 +34,7 @@ public class MyConfig {
      */
     @Bean
     public LocalDate localDate() {
+        System.out.println("create localDate");
         return LocalDate.now();
     }
 
@@ -50,7 +50,13 @@ public class MyConfig {
 
     @Bean
     public MyModel myModel() {
-        return new MyModel();
+        MyModel myModel = new MyModel();
+        // proxyBeanMethods = false，不会给配置类生成代理对象，
+        // 通过this调用本类@bean方法，会重新创建bean对象实例
+        // proxyBeanMethods = true，会给配置类生成代理对象，
+        // 通过this调用本类@bean方法，会从容器中获取bean对象实例
+        myModel.setDate(this.localDate());
+        return myModel;
     }
 
     @Bean
@@ -59,6 +65,16 @@ public class MyConfig {
         Movie movie = new Movie();
         movie.setStaff(Arrays.asList(baby));
         return movie;
+    }
+
+    /**
+     * matchIfMissing：为true表示，缺少配置也会加载组件，默认false
+     */
+    @Bean
+    @ConditionalOnProperty(prefix = "hyh", name = "name",
+            havingValue = "hyh", matchIfMissing = false)
+    public String conditionalOnProperties() {
+        return "conditionalOnProperties";
     }
 }
 

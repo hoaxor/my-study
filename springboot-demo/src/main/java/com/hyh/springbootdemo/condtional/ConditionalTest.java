@@ -1,4 +1,4 @@
-package com.hyh.springbootdemo.condtion;
+package com.hyh.springbootdemo.condtional;
 
 import org.springframework.context.annotation.Configuration;
 
@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
  * @author MLY
  */
 @Configuration
-public class ConditionTest {
+public class ConditionalTest {
 
 
 }

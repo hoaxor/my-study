@@ -12,7 +12,7 @@ import java.util.Properties;
  * @author : huang.yaohua
  * @date : 2022/5/23 15:06
  */
-@Service
+//@Service
 @Slf4j(topic = "myService")
 public class MyService {
     public void print(String msg) {

@@ -544,3 +544,8 @@ hibernate使用HibernateTransactionManager
 </beans>
 ```
 
+
+
+#### 事务失效场景
+
+https://www.cnblogs.com/konglxblog/p/16229394.html

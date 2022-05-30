@@ -1,0 +1,47 @@
+spring:
+  mvc:
+    static-path-pattern: /static/**
+
+
+hyh:
+  name: hyh
+
+#数组1 ，行内写法 
+arry1: [ 1, 2, 3 ]
+#数组2，
+array2:
+  - 4
+  - 5
+  - 6
+
+person:
+  # 字符串可以使用单引号或双引号
+  # 单引号中的内容会被转义
+  # 双引号的内容不会被转义
+  username: "hyh \n mj"
+  boss: false
+  birth: 2022/05/30
+  age: 28
+  interests: [ 跑步, 打游戏 ]
+  pets:
+    - cat
+    - dog
+    - duck
+  #  score: 
+  #    english: 80
+  #    history: 80
+  #    math: 90
+  score: { englist:80,math:99 }
+  salary:
+    - 99.1
+    - 1000.2
+  car:
+    brand: audio
+    price: 99999
+  all-cars:
+    byd: [ { brand: byd, price: 898 } ]
+    audio:
+      - { brand: a1, price: 999 }
+      - { brand: a2 , price:1000 }
+      
+  
