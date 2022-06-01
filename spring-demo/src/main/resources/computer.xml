@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--静态工厂使用-->
+    <bean id="computer1" class="com.hyh.factory.StaticComputerFactory" factory-method="getComputer">
+        <constructor-arg value="1"/>
+    </bean>
+
+    <!--实例工厂
+    -->
+    <!--先创建工厂实例-->
+    <bean id="computerFactory" class="com.hyh.factory.ComputerFactory"/>
+    <!--bean关联工厂实例
+        指定工厂方法
+        配置工厂方法入参
+     -->
+    <bean id="computer2" class="com.hyh.model.Computer"
+          factory-bean="computerFactory" factory-method="getComputer">
+        <constructor-arg value="2012"/>
+    </bean>
+
+    <!--实现spring FactoryBean类
+        spring会自动调用FactoryBean.getObject 创建bean
+        不需要指定 factory-bean 和 factory-method
+        -->
+    <bean id="computer3" class="com.hyh.factory.FactoryBeanImpl"/>
+</beans>

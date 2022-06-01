@@ -7,6 +7,8 @@
 
     <import resource="service.xml"/>
     <import resource="student.xml"/>
+    <import resource="computer.xml"/>
+    <import resource="beanPostProcessor.xml"/>
 
     <!-- 可以使用通配符   -->
     <import resource="classpath:empty/*.xml"/>

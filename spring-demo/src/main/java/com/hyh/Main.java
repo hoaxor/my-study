@@ -1,9 +1,13 @@
 package com.hyh;
 
+import com.hyh.ioc.setinjection.School;
 import com.hyh.ioc.setinjection.service.MyService;
 import com.hyh.ioc.setinjection.service.impl.MyServiceImpl;
+import com.hyh.model.Computer;
+import com.hyh.model.MockDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -21,7 +25,7 @@ public class Main {
         //2. 创建容器对象 ApplicationContext, 使用实现类 ClassPathXmlApplicationContext 从类路径中
         // spring 默认使用无参构造方法，创建容器时会读取配置文件，创建文件中声明的所有对象
         // 优点：获取对象速度快，缺点：占用内存
-        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         //3. 获取对象
         myService = (MyService) context.getBean("myService");
         //4. 使用对象
@@ -30,5 +34,15 @@ public class Main {
 
         MyService bean = context.getBean(MyService.class);
 
+//        School school = context.getBean(School.class);
+//        测试静态工厂
+        System.out.println(context.getBean("computer1", Computer.class));
+        //测试实例工厂
+        System.out.println(context.getBean("computer2", Computer.class));
+        // 测试spring FactoryBean接口
+        System.out.println(context.getBean("computer3", Computer.class));
+        // 测试bean生命周期方法
+        System.out.println(context.getBean(MockDataSource.class));
+        context.close();
     }
 }

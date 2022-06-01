@@ -178,15 +178,152 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
 
 ![image-20220522195307174](\picture\image-20220522195307174.png)
 
+##### 泛型依赖注入
+
+
+
 ### AOP（Aspect Oriented Programming）
 
 面向切面编程，在不修改源码的前提下进行功能增强。
+
+在程序运行期间，将某段代码动态切入到方法的指定位置。
+
+#### JDK动态代理
+
+```java
+public class ProxyTest {
+    public static void main(String[] args) {
+        CalculatorImpl calculator = new CalculatorImpl();
+        // 创建动态代理对象
+        // 
+        Calculator proxyInstance = (Calculator) Proxy.newProxyInstance(calculator.getClass().getClassLoader(),
+                calculator.getClass().getInterfaces(),
+                ((proxy, method, args1) -> {
+                    System.out.println("args=" + Arrays.toString(args1));
+                    // calculator 被代理对象
+                    // args1 方法入参
+                    // 必须调用method.invoke，否则不会调用目标方法
+                    // method.invoke的第一个参数必须是目标对象，
+                    // 如果传入proxy会循环调用InvocationHandler.invoke，导致栈溢出
+                    return method.invoke(calculator, args1);
+                }));
+        // 动态代理对象实现了目标对象的所有接口，可以进行类型转换
+        System.out.println(proxyInstance.add(1, 1));
+
+    }
+}
+// 被代理对象的类加载器
+// 被代理对象实现的接口列表
+// InvocationHandler
+    public static Object newProxyInstance(ClassLoader loader,
+                                          Class<?>[] interfaces,
+                                          InvocationHandler h)
+        throws IllegalArgumentException
+    {}
+
+public interface InvocationHandler {
+
+    /**
+     * Processes a method invocation on a proxy instance and returns
+     * the result.  This method will be invoked on an invocation handler
+     * when a method is invoked on a proxy instance that it is
+     * associated with.
+     *
+     * @param   proxy the proxy instance that the method was invoked on
+     *
+     * @param   method the {@code Method} instance corresponding to
+     * the interface method invoked on the proxy instance.  The declaring
+     * class of the {@code Method} object will be the interface that
+     * the method was declared in, which may be a superinterface of the
+     * proxy interface that the proxy class inherits the method through.
+     *
+     * @param   args an array of objects containing the values of the
+     * arguments passed in the method invocation on the proxy instance,
+     * or {@code null} if interface method takes no arguments.
+     * Arguments of primitive types are wrapped in instances of the
+     * appropriate primitive wrapper class, such as
+     * {@code java.lang.Integer} or {@code java.lang.Boolean}.
+     *
+     * @return  the value to return from the method invocation on the
+     * proxy instance.  If the declared return type of the interface
+     * method is a primitive type, then the value returned by
+     * this method must be an instance of the corresponding primitive
+     * wrapper class; otherwise, it must be a type assignable to the
+     * declared return type.  If the value returned by this method is
+     * {@code null} and the interface method's return type is
+     * primitive, then a {@code NullPointerException} will be
+     * thrown by the method invocation on the proxy instance.  If the
+     * value returned by this method is otherwise not compatible with
+     * the interface method's declared return type as described above,
+     * a {@code ClassCastException} will be thrown by the method
+     * invocation on the proxy instance.
+     */
+    // proxy 代理对象
+    // 目标方法
+    // 方法入参
+    public Object invoke(Object proxy, Method method, Object[] args)
+        throws Throwable;
+}
+
+```
+
+```java
+public class CalculatorImpl implements Calculator {
+    @Override
+    public int add(int i, int j) {
+        return i + j;
+    }
+
+    @Override
+    public int sub(int i, int j) {
+        return i - j;
+    }
+
+    @Override
+    public int mul(int i, int j) {
+        return i * j;
+    }
+
+    @Override
+    public int div(int i, int j) {
+        return i / j;
+    }
+}
+
+public interface Calculator {
+    int add(int i, int j);
+
+    int sub(int i, int j);
+
+    int mul(int i, int j);
+
+    int div(int i, int j);
+}
+```
+
+局限：
+
+- 目标对象必须实现至少一个接口，否则无法使用JDK的动态代理
+
+- 使用起来比较复杂
+
+
+
+
+
+![image-20220601175519002](\picture\image-20220601175519002.png)
+
+
+
+
 
 ![image-20220515223452360](\picture\image-20220515223452360.png)
 
 ![image-20220515223556530](\picture\image-20220515223556530.png)
 
 https://www.jianshu.com/p/2e8409bc8c3b
+
+通知类型：
 
 @Before，前置通知
 
@@ -549,3 +686,15 @@ hibernate使用HibernateTransactionManager
 #### 事务失效场景
 
 https://www.cnblogs.com/konglxblog/p/16229394.html
+
+## 一、事务方法访问修饰符非public，导致事务失效
+
+如果事务是static、final的，同样无法通过动态代理，事务也是不会生效的。
+　　Spring的声明式事务是基于动态代理实现的，我们无法重写final修饰的方法；
+　　不管是JDK动态代理还是Cglib的动态代理，就是要通过代理的方式获取到代理的具体对象，而static方法修饰的方法是属于类的，不属于任何对象，所以static方法不能被重写，即便写法上是重写，但是并不具备重写的含义，也就是说static方法也不被进行动态代理。
+
+原文链接：https://blog.csdn.net/qq_16268979/article/details/123707823
+
+**2、解决**
+方式一：将方法修饰符改为public
+方式二：开启AspectJ代理模式
