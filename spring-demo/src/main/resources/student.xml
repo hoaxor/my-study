@@ -43,8 +43,14 @@
     <bean id="date" class="java.util.Date">
         <property name="time" value="123132213123"/>
     </bean>
-
     <bean id="school" class="com.hyh.ioc.setinjection.School">
         <property name="name" value="CQUPT"/>
+    </bean>
+    <!--abstract="true" org.springframework.beans.factory.BeanIsAbstractException: Error creating bean with name 'school': Bean definition is abstract-->
+    <bean id="s1" class="java.lang.String" abstract="true">
+    </bean>
+    <!--prototype:多实例，getbean时创建对象-->
+    <!--singleton:单实例，容器创建时创建对象-->
+    <bean id="s2" class="java.lang.String" scope="prototype">
     </bean>
 </beans>
