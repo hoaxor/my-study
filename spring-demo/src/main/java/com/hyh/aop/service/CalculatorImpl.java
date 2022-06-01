@@ -2,11 +2,13 @@ package com.hyh.aop.service;
 
 
 import com.hyh.ioc.setinjection.Student;
+import org.springframework.stereotype.Component;
 
 /**
  * @author : huang.yaohua
  * @date : 2022/6/1 16:32
  */
+@Component
 public class CalculatorImpl implements Calculator, OrderService {
     @Override
     public int add(int i, int j) {
