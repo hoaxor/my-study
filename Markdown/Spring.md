@@ -208,7 +208,7 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
                 this.onRefresh();
                 // 初始化监控器
                 this.registerListeners();
-                // 初始化bean
+                // 初始化bean，创建bean实例
                 this.finishBeanFactoryInitialization(beanFactory);
                 // 完成初始化
                 this.finishRefresh();

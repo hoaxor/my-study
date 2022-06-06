@@ -18,7 +18,7 @@ public class CalculatorAspect {
      * 前置通知
      * 切入点：访问权限符 返回值类型 方法签名
      */
-    @Before("execution(public com.hyh.aop.service.CalculatorImpl add(..))")
+    @Before("execution(public * com.hyh.aop*CalculatorImpl.add*(..))")
     public void before() {
         System.out.println("before");
     }

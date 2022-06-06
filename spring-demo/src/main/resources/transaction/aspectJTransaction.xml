@@ -5,7 +5,7 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
     <context:property-placeholder location="classpath:transaction/jdbc.properties"/>
-
+    <!--数据源-->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
@@ -15,24 +15,28 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
+    <!--配置事务管理器-->
     <!--声明业务方法事务属性（隔离级别、传播行为、超时时间）-->
-    <tx:advice id="serviceAdvice">
+    <!--transaction-manager默认使用transactionManager，事务管理器beanId=transactionManager时可以不写-->
+    <tx:advice id="serviceAdvice" transaction-manager="transactionManager">
         <tx:attributes>
+            <!--指明哪些方法加入事务-->
             <!-- name 业务方法名称：1.使用方法全名、2.使用带部分通配符的方法名、3.使用“*”           -->
-            <tx:method name="get*" isolation="DEFAULT" propagation="REQUIRED" timeout="-1"
+            <tx:method name="query*" read-only="true" propagation="SUPPORTS" timeout="-1"
                        rollback-for="java.lang.NullPointerException,java.lang.IndexOutOfBoundsException"/>
             <tx:method name="set*" isolation="DEFAULT" propagation="REQUIRES_NEW" timeout="-1"
                        rollback-for="java.lang.NullPointerException,java.lang.IndexOutOfBoundsException"/>
             <!--除上述之外的方法使用以下事务配置-->
-            <tx:method name="*" isolation="DEFAULT" propagation="REQUIRES_NEW" timeout="-1"
+            <tx:method name="*" isolation="DEFAULT" propagation="REQUIRED" timeout="-1"
                        rollback-for="java.lang.NullPointerException,java.lang.IndexOutOfBoundsException"/>
         </tx:attributes>
     </tx:advice>
-    <!--切入点表达式：表明包中的哪些类、类中的方法参加事务-->
+    <!--切入点表达式：表明哪些包中的哪些类、类中的方法参加事务-->
     <aop:config>
         <!--   id切入点表达式的名称   唯一的  -->
-        <aop:pointcut id="servicePointcut" expression="execution(* *..transaction.service..*.*(..))"/>
-        <!--关联切入点表达式和事务通知-->
+        <!--   切入点表达式：表示事务管理器要切入这些方法-->
+        <aop:pointcut id="servicePointcut" expression="execution(* com.hyh.transaction.service.GoodServicesImpl.*(..))"/>
+        <!--事务增强、事务建议：关联切入点表达式和事务通知-->
         <aop:advisor advice-ref="serviceAdvice" pointcut-ref="servicePointcut"/>
     </aop:config>
 </beans>
