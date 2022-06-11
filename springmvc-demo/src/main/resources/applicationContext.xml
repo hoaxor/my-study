@@ -2,7 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <mvc:annotation-driven/>
 
     <context:component-scan base-package="com.hyh"/>
     <!--配置试图解析器-->
@@ -20,4 +22,18 @@
             </list>
         </property>
     </bean>
+
+    <!--通过 ConversionServiceFactoryBean  获取 conversionService
+    自定义 conversionService
+        通过属性注入自定义的转换器-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="com.hyh.springmvcdemo.converter.MyConverter"/>
+            </set>
+        </property>
+    </bean>
+    <!--通过配置conversion-service="conversionService" 使用自定义的conversionService-->
+    <!--    <mvc:annotation-driven conversion-service="conversionService"/>-->
+
 </beans>

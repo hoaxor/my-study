@@ -1,4 +1,4 @@
-# SpringMVC
+#  SpringMVC
 
 ## 简介
 
@@ -488,7 +488,21 @@ DispatcherServlet初始化组件代码
 
 ## 视图解析分析
 
+- 对于控制器的目标方法，无论其返回值是`String`、`View`、`ModelMap`或是`ModelAndView`，`SpringMVC`都会在内部将它们封装为一个`ModelAndView`对象进行返回。
 
+- `SpringMVC`借助视图解析器`ViewResolver`得到最终的视图对象`View`，最终的视图可以是`JSP`也可是`Excel`、
+  `JFreeChart`等各种表现形式的视图。
+
+解析流程
+
+1、调用目标方法，SpringMVC将目标方法返回的`String`、`View`、`ModelMap`或是`ModelAndView`都转换为一个`ModelAndView`对象；
+
+2、然后通过视图解析器`ViewResolver`对`ModelAndView`对象中的`View`对象进行解析，将该逻辑视图`View`对象解析为一个物理视图`View`对象；
+
+3、最后调用物理视图View对象的render()方法进行视图渲染，得到响应结果。
+
+
+原文链接：https://blog.csdn.net/xiangwanpeng/article/details/53144002
 
 ```java
     private void processDispatchResult(HttpServletRequest request, HttpServletResponse response, @Nullable HandlerExecutionChain mappedHandler, @Nullable ModelAndView mv, @Nullable Exception exception) throws Exception {
@@ -531,7 +545,7 @@ DispatcherServlet初始化组件代码
         View view;
         if (viewName != null) {
             // 根据视图名获取视图对象，遍历容器中获取的视图解析器，用视图解析器解析获取视图
-            
+            // 
             view = this.resolveViewName(viewName, mv.getModelInternal(), locale, request);
             if (view == null) {
                 throw new ServletException("Could not resolve view with name '" + mv.getViewName() + "' in servlet with name '" + this.getServletName() + "'");
@@ -564,6 +578,96 @@ DispatcherServlet初始化组件代码
     }
 
 ```
+
+
+
+### 视图解析器ViewResolver
+
+原文链接：https://blog.csdn.net/xiangwanpeng/article/details/53144002
+
+视图解析器的作用是将逻辑视图转为物理视图，所有的视图解析器都必须实现`ViewResolver`接口。
+
+SpringMVC为逻辑视图名的解析提供了不同的策略，可以在Spring WEB上下文中配置一种或多种解析策略，并指定他们之间的先后顺序。每一种映射策略对应一个具体的视图解析器实现类。程序员可以选择一种视图解析器或混用多种视图解析器。可以通过order属性指定解析器的优先顺序，order越小优先级越高，SpringMVC会按视图解析器顺序的优先顺序对逻辑视图名进行解析，直到解析成功并返回视图对象，否则抛出ServletException异常。
+
+**自定义视图解析器需要实现spring提供的`org.springframework.core.Ordered`接口，调整视图解析器的优先级，否则会被默认视图解析器解析**
+
+### 视图View
+
+视图的作用是渲染模型数据，将模型里的数据以某种形式呈现给客户。
+
+为了实现视图模型和具体实现技术的解耦，`Spring`在`org.springframework.web.servlet`包中定义了一个高度抽象的`View`接口。
+视图对象由视图解析器负责实例化。由于视图是无状态的，所以他们不会有线程安全的问题。所谓视图是无状态的，是指对于每一个请求，都会创建一个`View`对象。
+`JSP`是最常见的视图技术。
+
+### mvc:view-controller
+
+不经控制器直接跳转到页面，可以使用mvc:view-controller标签实现：
+
+```xml
+　　<!-- 配置直接转发的页面 -->      
+<!-- 可以直接相应转发的页面, 而无需再经过 Handler 的方法.  -->  
+    <mvc:view-controller path="/success" view-name="success"/>  
+    <!-- 在实际开发中通常都需配置 mvc:annotation-driven 标签，  之前的页面才不会因为配置了直接转发页面而受到影响 -->  
+    <mvc:annotation-driven></mvc:annotation-driven>  
+```
+
+
+
+## 数据绑定流程
+
+- Spring MVC将`ServletRequest`对象传递给`DataBinder`。
+- 控制类的处理方法将形参对象传递给`DataBinder`
+- ``DataBinder`调用`ConversionService`组件，使用转换服务内部的转换器`converter`进行数据类型的转换、格式化等工作。
+- 然后将`ServletRequest`对象中的请求参数填充到方法参数对象中。对绑定好的数据会进行数据合法性检验
+- 检验完成后生成数据绑定结果`BindingResult`对象（绑定结果是否异常）。最后`Spring MVC`将`BinderResult`对象中的内容赋值给处理方法的相应参数
+
+原文链接：https://blog.csdn.net/weixin_44949462/article/details/119857384
+
+![在这里插入图片描述](\picture\watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDk0OTQ2Mg==,size_16,color_FFFFFF,t_70.png)
+
+### 自定义转换器
+
+自定义转换器，实现`Converter`接口
+
+```java
+public class MyConverter implements Converter<String, User> {
+
+    @Override
+    public User convert(String source) {
+        String[] split = source.split(";");
+        User user = new User();
+        user.setName(split[0]);
+        user.setAge(Integer.parseInt(split[1]));
+        return user;
+    }
+}
+```
+
+
+
+配置
+
+```xml
+    <!--通过 ConversionServiceFactoryBean  获取 conversionService
+    自定义 conversionService
+        通过属性注入自定义的转换器-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="com.hyh.springmvcdemo.converter.MyConverter"/>
+            </set>
+        </property>
+    </bean>
+    <!--通过配置conversion-service="conversionService" 使用自定义的conversionService-->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
+```
+
+
+
+
+
+
 
 
 
