@@ -1,12 +1,10 @@
 package com.hyh;
 
-import com.hyh.ioc.setinjection.School;
 import com.hyh.ioc.setinjection.service.MyService;
 import com.hyh.ioc.setinjection.service.impl.MyServiceImpl;
 import com.hyh.model.Computer;
 import com.hyh.model.MockDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -44,5 +42,7 @@ public class Main {
         // 测试bean生命周期方法
         System.out.println(context.getBean(MockDataSource.class));
         context.close();
+        
+        
     }
 }

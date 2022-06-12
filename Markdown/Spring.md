@@ -182,6 +182,157 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
 
 
 
+#### Ioc源码分析
+
+源码分析思路：
+
+1. 从hello world开始
+
+```java
+    public void refresh() throws BeansException, IllegalStateException {
+        synchronized(this.startupShutdownMonitor) {
+            // 准备环节
+            this.prepareRefresh();
+            // 解析xml, 加载BeanDefinitions
+            ConfigurableListableBeanFactory beanFactory = this.obtainFreshBeanFactory();
+            this.prepareBeanFactory(beanFactory);
+
+            try {
+                this.postProcessBeanFactory(beanFactory);
+                this.invokeBeanFactoryPostProcessors(beanFactory);
+                // 注册spring内部类的后置处理器
+                this.registerBeanPostProcessors(beanFactory);
+                // 国际化支持
+                this.initMessageSource();
+                this.initApplicationEventMulticaster();
+                this.onRefresh();
+                // 初始化监控器
+                this.registerListeners();
+                // 初始化bean，创建bean实例
+                this.finishBeanFactoryInitialization(beanFactory);
+                // 完成初始化
+                this.finishRefresh();
+            } catch (BeansException var9) {
+                if (this.logger.isWarnEnabled()) {
+                    this.logger.warn("Exception encountered during context initialization - cancelling refresh attempt: " + var9);
+                }
+
+                this.destroyBeans();
+                this.cancelRefresh(var9);
+                throw var9;
+            } finally {
+                this.resetCommonCaches();
+            }
+
+        }
+    }
+
+```
+
+```java
+    protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
+        if (beanFactory.containsBean("conversionService") && beanFactory.isTypeMatch("conversionService", ConversionService.class)) {
+            beanFactory.setConversionService((ConversionService)beanFactory.getBean("conversionService", ConversionService.class));
+        }
+
+        if (!beanFactory.hasEmbeddedValueResolver()) {
+            beanFactory.addEmbeddedValueResolver((strVal) -> {
+                return this.getEnvironment().resolvePlaceholders(strVal);
+            });
+        }
+
+        String[] weaverAwareNames = beanFactory.getBeanNamesForType(LoadTimeWeaverAware.class, false, false);
+        String[] var3 = weaverAwareNames;
+        int var4 = weaverAwareNames.length;
+
+        for(int var5 = 0; var5 < var4; ++var5) {
+            String weaverAwareName = var3[var5];
+            this.getBean(weaverAwareName);
+        }
+
+        beanFactory.setTempClassLoader((ClassLoader)null);
+        beanFactory.freezeConfiguration();
+        // 初始化单实例bean
+        beanFactory.preInstantiateSingletons();
+    }
+
+    public void preInstantiateSingletons() throws BeansException {
+        if (this.logger.isTraceEnabled()) {
+            this.logger.trace("Pre-instantiating singletons in " + this);
+        }
+        // 获取所有beanI
+        List<String> beanNames = new ArrayList(this.beanDefinitionNames);
+        Iterator var2 = beanNames.iterator();
+
+        while(true) {
+            String beanName;
+            Object bean;
+            do {
+                while(true) {
+                    RootBeanDefinition bd;
+                    do {
+                        do {
+                            do {
+                                if (!var2.hasNext()) {
+                                    var2 = beanNames.iterator();
+
+                                    while(var2.hasNext()) {
+                                        beanName = (String)var2.next();
+                                        Object singletonInstance = this.getSingleton(beanName);
+                                        if (singletonInstance instanceof SmartInitializingSingleton) {
+                                            SmartInitializingSingleton smartSingleton = (SmartInitializingSingleton)singletonInstance;
+                                            if (System.getSecurityManager() != null) {
+                                                AccessController.doPrivileged(() -> {
+                                                    smartSingleton.afterSingletonsInstantiated();
+                                                    return null;
+                                                }, this.getAccessControlContext());
+                                            } else {
+                                                smartSingleton.afterSingletonsInstantiated();
+                                            }
+                                        }
+                                    }
+
+                                    return;
+                                }
+
+                                beanName = (String)var2.next();
+                                bd = this.getMergedLocalBeanDefinition(beanName);
+                            } while(bd.isAbstract());
+                        } while(!bd.isSingleton());
+                    } while(bd.isLazyInit());
+
+                    if (this.isFactoryBean(beanName)) {
+                        bean = this.getBean("&" + beanName);
+                        break;
+                    }
+
+                    this.getBean(beanName);
+                }
+            } while(!(bean instanceof FactoryBean));
+
+            FactoryBean<?> factory = (FactoryBean)bean;
+            boolean isEagerInit;
+            if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
+                SmartFactoryBean var10000 = (SmartFactoryBean)factory;
+                ((SmartFactoryBean)factory).getClass();
+                isEagerInit = (Boolean)AccessController.doPrivileged(var10000::isEagerInit, this.getAccessControlContext());
+            } else {
+                isEagerInit = factory instanceof SmartFactoryBean && ((SmartFactoryBean)factory).isEagerInit();
+            }
+
+            if (isEagerInit) {
+                this.getBean(beanName);
+            }
+        }
+    }
+
+
+```
+
+
+
+
+
 ### AOP（Aspect Oriented Programming）
 
 面向切面编程，在不修改源码的前提下进行功能增强。
@@ -323,17 +474,123 @@ public interface Calculator {
 
 https://www.jianshu.com/p/2e8409bc8c3b
 
-通知类型：
+#### 通知类型：
 
 @Before，前置通知
 
+```java
+    /**
+     * 方法执行前执行
+     * joinPoint 可以省略
+     */
+    @Before("execution(public * com.hyh..BaseService.getSome(..))")
+    public void before(JoinPoint joinPoint) {
+        System.out.println("before");
+        System.out.println(joinPoint.getTarget());
+    }
+```
+
+
+
 @AfterReturning，后置通知
+
+```java
+    /**
+     * 方法返回后执行
+     * JoinPoint 必须是第一个或者省略
+     * returning 用来就收方法返回值的 参数名，入参名
+     */
+    @AfterReturning(value = "execution(public * com.hyh..BaseService.getSome(..))", returning = "result")
+    public void afterReturning(JoinPoint joinPoint, Object result) {
+        System.out.println("after returning");
+        System.out.println(joinPoint);
+        System.out.println("result=" + result);
+    }
+```
+
+
 
 @Around，环绕通知
 
+```java
+    /**
+     * 可以实现其他所有通知的功能
+     * 通过 ProceedingJoinPoint  推进目标方法的执行
+     */
+    @Around("execution(public * com.hyh..BaseService.getSome(..))")
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+        System.out.println("around");
+        System.out.println(Arrays.toString(joinPoint.getArgs()));
+        System.out.println(joinPoint.getSignature());
+        // 利用反射执行目标方法
+        joinPoint.proceed();
+        // 可以修改目标方法的返回值
+        return "1";
+    }
+```
+
+
+
 @AfertThrowing，异常通知
 
+```java
+    /**
+     * 方法异常后执行
+     */
+    @AfterThrowing(value = "execution(public * com.hyh..BaseService.getSome(..))", throwing = "e")
+    public void afterThrowing(JoinPoint joinPoint, RuntimeException e) {
+        System.out.println("after throwing");
+        System.out.println(joinPoint);
+        System.out.println(e);
+    }
+```
+
+
+
 @After，最终通知
+
+```java
+    @Around("execution(public * com.hyh..BaseService.getSome(..))")
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+        System.out.println("around");
+        System.out.println(Arrays.toString(joinPoint.getArgs()));
+        System.out.println(joinPoint.getSignature());
+        // 利用反射执行目标方法
+        //前置通知
+        Object proceed = null;
+        try {
+            proceed = joinPoint.proceed();
+        } catch (Throwable e) {
+            e.printStackTrace();
+            // 异常通知
+        } finally {
+            //最终通知
+        }
+        //返回通知
+        // 可以修改目标方法的返回值
+        return proceed;
+    }
+```
+
+
+
+#### 切入点表达式：
+
+execution([权限修饰符] [返回值类型] [简单类名/全类名] \[方法名\](\[参数列表\]))
+
+`*`：匹配任何数量字符，在参数列中匹配一个任意类型参数，在包名中匹配任意一层子包，权限修饰符不能用
+
+`..`：匹配任何数量字符的重复，如在类型模式中匹配任何数量子包；而在方法参数模式中匹配任何数量参数。
+
+`+`：匹配指定类型的子类型；仅能作为后缀放在类型模式后边。
+
+组合切入点表达式
+
+​    AspectJ使用 且（&&）、或（||）、非（！）来组合切入点表达式。
+
+​    在Schema风格下，由于在XML中使用“&&”需要使用转义字符“&&”来代替之，所以很不方便，因此Spring ASP 提供了and、or、not来代替&&、||、！。
+
+
 
 ```Java
 package com.hyh.aop.aspcect;
