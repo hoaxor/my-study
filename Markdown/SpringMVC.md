@@ -615,9 +615,9 @@ SpringMVC为逻辑视图名的解析提供了不同的策略，可以在Spring W
 
 ## 数据绑定流程
 
-- Spring MVC将`ServletRequest`对象传递给`DataBinder`。
+- Spring MVC将`ServletRequest`对象传递给`DataBinder`（通过WebDataBinderFactory创建）。
 - 控制类的处理方法将形参对象传递给`DataBinder`
-- ``DataBinder`调用`ConversionService`组件，使用转换服务内部的转换器`converter`进行数据类型的转换、格式化等工作。
+- ``DataBinder`调用`ConversionService`组件，使用转换服务内部的转换器`converter`进行数据类型的转换工作。
 - 然后将`ServletRequest`对象中的请求参数填充到方法参数对象中。对绑定好的数据会进行数据合法性检验
 - 检验完成后生成数据绑定结果`BindingResult`对象（绑定结果是否异常）。最后`Spring MVC`将`BinderResult`对象中的内容赋值给处理方法的相应参数
 
@@ -665,9 +665,142 @@ public class MyConverter implements Converter<String, User> {
 
 
 
+## mvc:annotation-driven
+
+`<mvc:annotation-driven />` 是一种简写形式，完全可以手动配置替代这种简写形式，简写形式可以让初学都快速应用默认配置方案。
+
+配置后会自动注册以下组件：
+
+`RequestMappingHandlerMapping`
+
+`RequestMappingHandlerAdapter`
+
+`ExceptionHandlerExceptionResolver`
 
 
 
+还提供以下支持：
+
+- 支持使用`ConversionService`实例对表单参数进行类型转换
+- 支持使用`NumberFormat`、`DateTimeFormat`注解完成数据类型的格式化
+- 支持使用`Valid`注解对`JavaBean`实例进行`JSR 303`验证
+- 支持使用`RequestBody`和`ResponseBody`注解
+
+`org\springframework\spring-webmvc\5.3.12\spring-webmvc-5.3.12.jar!\META-INF\spring.handlers`
+
+```properties
+http\://www.springframework.org/schema/mvc=org.springframework.web.servlet.config.MvcNamespaceHandler
+
+```
+
+```java
+public class MvcNamespaceHandler extends NamespaceHandlerSupport {
+    public MvcNamespaceHandler() {
+    }
+
+    public void init() {
+        //  annotation-driven 配置对应的解析类 AnnotationDrivenBeanDefinitionParser 
+        this.registerBeanDefinitionParser("annotation-driven", new AnnotationDrivenBeanDefinitionParser());
+        this.registerBeanDefinitionParser("default-servlet-handler", new DefaultServletHandlerBeanDefinitionParser());
+        this.registerBeanDefinitionParser("interceptors", new InterceptorsBeanDefinitionParser());
+        this.registerBeanDefinitionParser("resources", new ResourcesBeanDefinitionParser());
+        this.registerBeanDefinitionParser("view-controller", new ViewControllerBeanDefinitionParser());
+        this.registerBeanDefinitionParser("redirect-view-controller", new ViewControllerBeanDefinitionParser());
+        this.registerBeanDefinitionParser("status-controller", new ViewControllerBeanDefinitionParser());
+        this.registerBeanDefinitionParser("view-resolvers", new ViewResolversBeanDefinitionParser());
+        this.registerBeanDefinitionParser("tiles-configurer", new TilesConfigurerBeanDefinitionParser());
+        this.registerBeanDefinitionParser("freemarker-configurer", new FreeMarkerConfigurerBeanDefinitionParser());
+        this.registerBeanDefinitionParser("groovy-configurer", new GroovyMarkupConfigurerBeanDefinitionParser());
+        this.registerBeanDefinitionParser("script-template-configurer", new ScriptTemplateConfigurerBeanDefinitionParser());
+        this.registerBeanDefinitionParser("cors", new CorsBeanDefinitionParser());
+    }
+}
+```
+
+```java
+	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		......
+        // 定义 RequestMappingHandlerMapping
+		RootBeanDefinition handlerMappingDef = new RootBeanDefinition(RequestMappingHandlerMapping.class);
+		handlerMappingDef.setSource(source);
+		handlerMappingDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		handlerMappingDef.getPropertyValues().add("order", 0);
+		handlerMappingDef.getPropertyValues().add("contentNegotiationManager", contentNegotiationManager);
+        .....
+        // 注册 RequestMappingHandlerMapping 类型对应的 RootBeanDefinition
+		readerContext.getRegistry().registerBeanDefinition(HANDLER_MAPPING_BEAN_NAME , handlerMappingDef);
+
+		
+        // 定义 RequestMappingHandlerAdapter
+		RootBeanDefinition handlerAdapterDef = new RootBeanDefinition(RequestMappingHandlerAdapter.class);
+	   	......
+        // 注册 RequestMappingHandlerAdapter 对应的 RootBeanDefinition
+		readerContext.getRegistry().registerBeanDefinition(HANDLER_ADAPTER_BEAN_NAME , handlerAdapterDef);
+
+```
+
+
+
+```java
+public interface BeanDefinitionParser {
+    @Nullable
+    BeanDefinition parse(Element var1, ParserContext var2);
+}
+```
+
+
+
+### mvc:default-servlet-handler
+
+使用`tomcat` 默认的`Servlet`来响应静态文件, 需要搭配`mvc:annotation-driven` 使用，否则动态请求无法响应
+
+
+
+### JSR303数据校验
+
+![image-20220615161221202](\picture\image-20220615161221202.png)
+
+#### hibernate-validator 使用
+
+`hibernate-validator`是对JSR303`的实现
+
+```java
+@Data
+public class User {
+    private int age;
+
+    @NotEmpty
+    private String name;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date birth;
+
+    @NumberFormat(style = NumberFormat.Style.DEFAULT, pattern = ".##")
+    private double wage;
+
+    @Email()
+    private String email;
+    
+    
+}
+
+     /**
+     * user 简单java对象未标注ModelAttribute默认会从隐含模型中获取，name为类名首字符小写
+     * 否则会使用ModelAttribute指定的name,从ModelMap中获取
+     * 使用Valid 开启校验
+     * 入参中增加 BindingResult 用来接收参数校验结果
+     * 
+     */
+    @RequestMapping("/hello3")
+    @ResponseBody
+    private User hello3(@Valid User user, String msg, BindingResult bindingResult, ModelMap map) {
+        System.out.println("hello3");
+        System.out.println(map.getAttribute("s"));
+        System.out.println(msg);
+        System.out.println(bindingResult);
+        return user;
+    }
+```
 
 
 
