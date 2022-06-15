@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hyh.springmvcdemo.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -47,16 +49,20 @@ public class MyController {
     /**
      * user 简单java对象未标注ModelAttribute默认会从隐含模型中获取，name为类名首字符小写
      * 否则会使用ModelAttribute指定的name,从ModelMap中获取
+     * 使用Valid 开启校验
+     * 入参中增加 BindingResult 用来接收参数校验结果
+     * 被校验参数与
      */
     @RequestMapping("/hello3")
     @ResponseBody
-    private User hello3(User user, String msg, HttpServletRequest request, HttpServletResponse response, ModelMap map) {
+    private User hello3(@Valid User user, String msg, BindingResult bindingResult, ModelMap map) {
 //        User user = new User();
 //        user.setAge(age);
 //        user.setName(name);
         System.out.println("hello3");
         System.out.println(map.getAttribute("s"));
         System.out.println(msg);
+        System.out.println(bindingResult);
         return user;
     }
 
@@ -73,7 +79,7 @@ public class MyController {
         System.out.println("modelAttribute");
     }
 
-//    @ModelAttribute
+    //    @ModelAttribute
     private User modelAttribute2(ModelMap map) {
         User user = new User();
         user.setName("hyh2");

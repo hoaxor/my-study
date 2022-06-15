@@ -3,18 +3,24 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
-    <mvc:annotation-driven/>
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc 	http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--通过配置conversion-service="conversionService" 使用自定义的conversionService-->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
+    <!--使用tomcat 默认的Servlet来响应静态文件, 需要搭配mvc:annotation-driven 使用，否则动态请求无法响应-->
+    <mvc:default-servlet-handler/>
+
 
     <context:component-scan base-package="com.hyh"/>
-    <!--配置试图解析器-->
+    <!--配置试图解析器，前端控制器会从容器中获取用来初始化viewResolver组件-->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <!--        页面前缀-->
         <property name="prefix" value="/WEB-INF/page/"/>
         <!--        页面后缀-->
         <property name="suffix" value=".jsp"/>
     </bean>
-
+    <!--配置请求处理器适配，未配置时会使用默认配置-->
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
         <property name="messageConverters">
             <list>
@@ -25,15 +31,25 @@
 
     <!--通过 ConversionServiceFactoryBean  获取 conversionService
     自定义 conversionService
-        通过属性注入自定义的转换器-->
-    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        通过属性注入自定义的转换器
+        自定义conversionService时，使用 FormattingConversionServiceFactoryBean 代替 ConversionServiceFactoryBean
+        FormattingConversionServiceFactoryBean具有数据转换功能和格式化功能（日期格式化、数字格式化）
+        ConversionServiceFactoryBean 只具有数据转换功能
+        -->
+<!--    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="com.hyh.springmvcdemo.converter.MyConverter"/>
+            </set>
+        </property>
+    </bean>-->
+
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
         <property name="converters">
             <set>
                 <bean class="com.hyh.springmvcdemo.converter.MyConverter"/>
             </set>
         </property>
     </bean>
-    <!--通过配置conversion-service="conversionService" 使用自定义的conversionService-->
-    <!--    <mvc:annotation-driven conversion-service="conversionService"/>-->
 
 </beans>
