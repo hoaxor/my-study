@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class BodyController {
     /**
-     * RequestBody接收请求body
+     * RequestBody接收请求body, POST类型才有请求体
      */
     @RequestMapping("/test1")
     public String test1(@RequestBody String body) {

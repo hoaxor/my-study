@@ -10,20 +10,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6c8dffb1-5c18-4e6e-b207-4678dec750f8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_classmate_1_3_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_validation_validation_api_1_1_0_Final.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hibernate_hibernate_validator_5_3_6_Final.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_jboss_logging_jboss_logging_3_3_0_Final.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/controller/BodyController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/js/test.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ojdbc7-10.0.7.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_druid_1_2_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_oracle_ojdbc7_10_0_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_mybatis_3_4_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_mybatis_spring_2_0_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/configuration/SqlSessionFactoryConfiguration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/controller/ExceptionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/controller/InterceptorTestController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/exception/MyException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/interceptor/InterceptorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/interceptor/InterceptorTest2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/mapper/OmOrderMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/model/OmOrder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/plugin/ExamplePlugin.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/service/OmOrderService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/service/MyService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/jdbc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/mapper/OmOrderMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/mybatis-config.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/spring-mybatis.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/spring.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/page/error.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/hyh/springmvcdemo/mybatis/mapper/OmOrderMapperTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Markdown/SpringMVC.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Markdown/SpringMVC.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/artifacts/springmvc_demo_war_exploded.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/springmvc_demo_war_exploded.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/controller/BodyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/controller/BodyController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/controller/MyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/controller/MyController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/model/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/applicationContext.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/applicationContext.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/page/hello.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/page/hello.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,8 +56,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Jsp File" />
         <option value="JavaScript File" />
+        <option value="Jsp File" />
+        <option value="spring-beans.schema" />
+        <option value="Interface" />
+        <option value="JUnit5 Test Class" />
         <option value="Class" />
       </list>
     </option>
@@ -82,10 +105,15 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/webapp/WEB-INF" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
     <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RecentsManager">
@@ -94,8 +122,97 @@
       <recent name="E:\myCode\my-study\springmvc-demo\src\main\resources" />
       <recent name="E:\myCode\my-study\springmvc-demo\src\main\java\com\hyh\springmvcdemo" />
     </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.hyh.springmvcdemo.mybatis.mapper" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.hyh.springmvcdemo.interceptor" />
+    </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.OmOrderMapperTest.test6">
+    <configuration name="OmOrderMapperTest.test2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="springmvc-demo" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.hyh.springmvcdemo.mybatis.mapper.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.hyh.springmvcdemo.mybatis.mapper" />
+      <option name="MAIN_CLASS_NAME" value="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapperTest" />
+      <option name="METHOD_NAME" value="test2" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OmOrderMapperTest.test3" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="springmvc-demo" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.hyh.springmvcdemo.mybatis.mapper.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.hyh.springmvcdemo.mybatis.mapper" />
+      <option name="MAIN_CLASS_NAME" value="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapperTest" />
+      <option name="METHOD_NAME" value="test3" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OmOrderMapperTest.test4" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="springmvc-demo" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.hyh.springmvcdemo.mybatis.mapper.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.hyh.springmvcdemo.mybatis.mapper" />
+      <option name="MAIN_CLASS_NAME" value="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapperTest" />
+      <option name="METHOD_NAME" value="test4" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OmOrderMapperTest.test5" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="springmvc-demo" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.hyh.springmvcdemo.mybatis.mapper.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.hyh.springmvcdemo.mybatis.mapper" />
+      <option name="MAIN_CLASS_NAME" value="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapperTest" />
+      <option name="METHOD_NAME" value="test5" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OmOrderMapperTest.test6" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="springmvc-demo" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.hyh.springmvcdemo.mybatis.mapper.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.hyh.springmvcdemo.mybatis.mapper" />
+      <option name="MAIN_CLASS_NAME" value="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapperTest" />
+      <option name="METHOD_NAME" value="test6" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Tomcat 8.5.79" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 8.5.79" ALTERNATIVE_JRE_ENABLED="false">
       <deployment>
         <artifact name="springmvc-demo:war exploded">
@@ -197,6 +314,15 @@
         </option>
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.OmOrderMapperTest.test6" />
+        <item itemvalue="JUnit.OmOrderMapperTest.test5" />
+        <item itemvalue="JUnit.OmOrderMapperTest.test4" />
+        <item itemvalue="JUnit.OmOrderMapperTest.test3" />
+        <item itemvalue="JUnit.OmOrderMapperTest.test2" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -214,7 +340,10 @@
       <workItem from="1654851536143" duration="3741000" />
       <workItem from="1655169865496" duration="9178000" />
       <workItem from="1655211057094" duration="2532000" />
-      <workItem from="1655278958124" duration="4306000" />
+      <workItem from="1655278958124" duration="4867000" />
+      <workItem from="1655342474268" duration="7476000" />
+      <workItem from="1655383540132" duration="3928000" />
+      <workItem from="1655430044984" duration="15964000" />
     </task>
     <task id="LOCAL-00001" summary="springmvc">
       <created>1654769025550</created>
@@ -223,7 +352,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654769025550</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="springmvc">
+      <created>1655287206286</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1655287206286</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -318,7 +454,7 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/controller/MyController.java</url>
-          <line>45</line>
+          <line>50</line>
           <option name="timeStamp" value="36" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
@@ -350,6 +486,11 @@
           <url>jar://$MAVEN_REPOSITORY$/org/springframework/spring-webmvc/5.3.12/spring-webmvc-5.3.12.jar!/org/springframework/web/servlet/DispatcherServlet.class</url>
           <line>518</line>
           <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$MAVEN_REPOSITORY$/org/springframework/spring-webmvc/5.3.12/spring-webmvc-5.3.12.jar!/org/springframework/web/servlet/DispatcherServlet.class</url>
+          <line>707</line>
+          <option name="timeStamp" value="44" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

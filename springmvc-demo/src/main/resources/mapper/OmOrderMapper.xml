@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--名称空间使用接口全类名-->
+<mapper namespace="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapper">
+    <!--    <typeAliases>-->
+    <!--        <typeAlias type="com.hyh.springmvcdemo.mybatis.model.OmOrder" alias="omOrder"/>-->
+    <!--    </typeAliases>-->
+    <resultMap id="omOrderResultMap" type="omOrder">
+        <result property="orderCode" column="order_code"/>
+        <result property="createDate" column="create_date"/>
+        <result property="orderState" column="order_state"/>
+    </resultMap>
+    <!-- id 方法名
+         resultType 返回值类型全类名
+         使用#{id}就告诉 MyBatis 创建一个预处理语句（PreparedStatement）参数，
+         在 JDBC 中，这样的一个参数在 SQL 中会由一个“?”来标识，并被传递到一个新的预处理语句中
+         -->
+    <select id="getOmOrder" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id}
+    </select>
+
+    <select id="getOmOrder2" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{arg0}
+          and order_state = #{arg1}
+    </select>
+
+    <select id="getOmOrder3" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id}
+          and order_state = #{orderState}
+    </select>
+
+    <select id="getOmOrder4" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id}
+          and order_state = #{orderState}
+    </select>
+
+    <select id="getOmOrder5" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id}
+          and order_state = #{order.orderState}
+    </select>
+
+    <select id="getOmOrder6" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+</mapper>
