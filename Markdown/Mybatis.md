@@ -320,3 +320,40 @@ JDBC 要求，如果一个列允许使用 null 值，并且会使用值为 null 
 
 
 
+## 延迟加载、按需加载
+
+
+
+## 动态SQL
+
+### if标签
+
+![image-20220620225945066](\picture\image-20220620225945066.png)
+
+
+
+### where标签
+
+![image-20220620230459918](\picture\image-20220620230459918.png)
+
+### trim标签
+
+![image-20220620230846133](\picture\image-20220620230846133.png)
+
+### foreach标签
+
+![image-20220620231515563](picture\image-20220620231515563.png)
+
+
+
+### choose标签
+
+### OGNL
+
+![image-20220620232223734](picture\image-20220620232223734.png)
+
+### bind标签
+
+### include标签
+
+### sql标签
