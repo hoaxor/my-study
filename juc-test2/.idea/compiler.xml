@@ -10,6 +10,7 @@
         <module name="springboot-demo" />
         <module name="juc-test2" />
         <module name="spring-demo" />
+        <module name="springmvc-demo" />
       </profile>
     </annotationProcessing>
   </component>

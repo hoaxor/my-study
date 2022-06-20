@@ -29,6 +29,12 @@
         </property>
     </bean>
 
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8"/>
+        <!--最大大小 #{1024*1024*20} spring 表达式-->
+        <property name="maxUploadSize" value="#{1024*1024*20}"/>
+    </bean>
+
     <!--通过 ConversionServiceFactoryBean  获取 conversionService
     自定义 conversionService
         通过属性注入自定义的转换器
@@ -36,13 +42,13 @@
         FormattingConversionServiceFactoryBean具有数据转换功能和格式化功能（日期格式化、数字格式化）
         ConversionServiceFactoryBean 只具有数据转换功能
         -->
-<!--    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
-        <property name="converters">
-            <set>
-                <bean class="com.hyh.springmvcdemo.converter.MyConverter"/>
-            </set>
-        </property>
-    </bean>-->
+    <!--    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+            <property name="converters">
+                <set>
+                    <bean class="com.hyh.springmvcdemo.converter.MyConverter"/>
+                </set>
+            </property>
+        </bean>-->
 
     <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
         <property name="converters">
