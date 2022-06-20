@@ -195,6 +195,66 @@ public @interface ModelAttribute {
 
 和`RequestMapping`注解一样都可以通过入参接收前台提交的数据
 
+
+
+## RequestBody
+
+
+
+## ResponseBody
+
+
+
+## ResponseEntity
+
+```java
+public class FileDownloadController {
+
+    @ResponseBody
+    @RequestMapping("/download")
+    public ResponseEntity<byte[]> download(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ServletContext servletContext = ((HttpServlet) request).getServletContext();
+        String realPath = servletContext.getRealPath("/js/test.js");
+        FileInputStream fileInputStream = new FileInputStream(realPath);
+        byte[] bytes = new byte[fileInputStream.available()];
+        fileInputStream.read(bytes);
+        fileInputStream.close();
+
+        return new ResponseEntity<byte[]>(bytes, HttpStatus.OK);
+    }
+}
+```
+
+
+
+## HttpMessageConverter
+
+HttpMessageConverter是spring3.0新添加的接口，负责将请求信息转换为一个对象，将对象输出为响应信息
+
+```java
+public interface HttpMessageConverter<T> {
+    // 可以读取的对象类型，
+    boolean canRead(Class<?> clazz, @Nullable MediaType mediaType);
+
+    boolean canWrite(Class<?> clazz, @Nullable MediaType mediaType);
+
+    List<MediaType> getSupportedMediaTypes();
+
+    default List<MediaType> getSupportedMediaTypes(Class<?> clazz) {
+        return !this.canRead(clazz, (MediaType)null) && !this.canWrite(clazz, (MediaType)null) ? Collections.emptyList() : this.getSupportedMediaTypes();
+    }
+
+    T read(Class<? extends T> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException;
+
+    void write(T t, @Nullable MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException;
+}
+
+```
+
+
+
+
+
 ## SpringMVC的数据响应
 
 ### 数据响应方式
