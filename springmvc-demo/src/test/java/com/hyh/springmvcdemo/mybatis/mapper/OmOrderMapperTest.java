@@ -7,14 +7,12 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author : huang.yaohua
@@ -100,6 +98,77 @@ class OmOrderMapperTest {
             String orderState = "10F";
             OmOrder omOrder = mapper.getOmOrder6(i, orderState);
             System.out.println(omOrder);
+        }
+    }
+
+    @Test
+    public void test7() throws IOException {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            String orderState = "10F";
+            Map<String, Object> omOrder = mapper.getOmOrderMap(i, orderState);
+            System.out.println(omOrder);
+            // mybatis使用hashMap
+            System.out.println(omOrder.getClass().getName());
+        }
+    }
+
+    @Test
+    public void test8() throws IOException {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            String orderState = "10F";
+            Map<Integer, OmOrder> omOrder = mapper.getOmOrderMaps(i, orderState);
+            System.out.println(omOrder);
+        }
+    }
+
+    @Test
+    public void test9() throws IOException {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            String orderState = "10F";
+            List<OmOrder> omOrders = mapper.getOmOrders(i, orderState);
+            System.out.println(omOrders);
+        }
+    }
+
+    @Test
+    public void test10() throws IOException {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            String orderState = "10F";
+            List<OmOrder> omOrders = mapper.getOmOrderAndUser(i, orderState);
+            System.out.println(omOrders);
+            //[OmOrder(id=352880, orderCode=00331708052336564, createDate=2017-08-18T16:15:52, orderState=10F, user=User(username=ztesoft, phoneNumber=null))]
+        }
+    }
+
+    @Test
+    public void test101() throws IOException {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            String orderState = "10F";
+            List<OmOrder> omOrders = mapper.getOmOrderAndUser2(i, orderState);
+            System.out.println(omOrders);
+            //[OmOrder(id=352880, orderCode=00331708052336564, createDate=2017-08-18T16:15:52, orderState=10F, user=User(username=ztesoft, phoneNumber=null))]
+        }
+    }
+
+    @Test
+    public void test11() throws IOException {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            String orderState = "10F";
+            List<OmOrder> omOrders = mapper.getOmOrderAndProductAttrs(i, orderState);
+            System.out.println(omOrders);
+            //[OmOrder(id=352880, orderCode=00331708052336564, createDate=2017-08-18T16:15:52, orderState=10F, user=User(username=ztesoft, phoneNumber=null))]
         }
     }
 }

@@ -271,3 +271,52 @@ JDBC 要求，如果一个列允许使用 null 值，并且会使用值为 null 
 ```
 
 默认情况下，使用 `#{}` 参数语法时，MyBatis 会创建 `PreparedStatement` 参数占位符，并通过占位符安全地设置参数（就像使用 ? 一样），`${column}` 会被直接替换，用这种方式接受用户的输入，并用作语句参数是不安全的，会导致潜在的 SQL 注入攻击。因此，要么不允许用户输入这些字段，要么自行转义并检验这些参数。
+
+
+
+## returnType、resultMap特殊用法
+
+```xml
+    <!--内建的类型别名 map 对应Java类型为 Map -->
+    <select id="getOmOrderMap" resultType="map">
+        select id, order_code orderCode, create_date createDate, order_state orderState
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+    <!--查询多条，返回一个map, 主键作为map的key, 返回多条记录时，resultType、resultMap值为集合内元素类型-->
+    <select id="getOmOrderMaps" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+    <!--返回多条记录时，resultType、resultMap值为集合内元素类型-->
+    <select id="getOmOrders" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+```
+
+```java
+    /**
+     * 返回值为Map，列名全大写作为Key，,mybatis使用HashMap封装结果
+     */
+    Map<String, Object> getOmOrderMap(@Param("id") Integer id, @Param("orderState") String orderState);
+
+    /**
+     * 使用MapKey注解指定列名作为key
+     */
+    @MapKey("id")
+    Map<Integer, OmOrder> getOmOrderMaps(@Param("id") Integer id, @Param("orderState") String orderState);
+
+    /**
+     * 返回结合类型
+     */
+    List<OmOrder> getOmOrders(@Param("id") Integer id, @Param("orderState") String orderState);
+```
+
+
+

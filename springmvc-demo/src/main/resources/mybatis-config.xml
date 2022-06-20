@@ -12,6 +12,7 @@
     </settings>
     <typeAliases>
         <typeAlias type="com.hyh.springmvcdemo.mybatis.model.OmOrder" alias="omOrder"/>
+        <typeAlias type="com.hyh.springmvcdemo.mybatis.model.User" alias="user"/>
     </typeAliases>
     
     <environments default="test">

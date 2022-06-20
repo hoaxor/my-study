@@ -3,6 +3,7 @@ package com.hyh.springmvcdemo.mybatis.model;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author : huang.yaohua
@@ -18,4 +19,7 @@ public class OmOrder {
 
     private String orderState;
 
+    private User user;
+
+    private List<OmProductAttr> attrs;
 }
