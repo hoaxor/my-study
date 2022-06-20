@@ -864,6 +864,224 @@ public class User {
 
 
 
+## 拦截器
+
+`SpringMVC`提供了拦截器机制，允许在运行目标方法之前进行一些拦截工作
+
+```java
+// 拦截器顶级接口
+public interface HandlerInterceptor {
+    // 目标方法之前运行，返回值用来判断是否执行目标方法
+    default boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        return true;
+    }
+
+    // 目标方法之后运行
+    default void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView) throws Exception {
+    }
+
+    // 在整个响应完成之后，chan.doFilter() 资源响应之后
+    default void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
+    }
+}
+```
+
+```xml
+    <!--设置拦截器-->
+    <mvc:interceptors>
+        <!--配置单个拦截器， 拦截所有请求-->
+        <!--        <bean id="interceptorTest" class="com.hyh.springmvcdemo.interceptor.InterceptorTest"/>-->
+        <!-- 配置单个拦截器， 拦截指定路径请求 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/interceptor1"/>
+            <bean id="interceptorTest" class="com.hyh.springmvcdemo.interceptor.InterceptorTest"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+```
+
+
+
+![image-20220616163809961](\picture\image-20220616163809961.png)
+
+![image-20220616164017752](\picture\image-20220616164017752.png)
+
+## 异常处理
+
+`mvc:annotation-driven`开启后
+
+如果异常解析器都不能处理该异常则抛出异常交给web容器处理
+
+![image-20220616173115614](\picture\image-20220616173115614.png)
+
+
+
+### ExceptionHandlerExceptionResolver
+
+```java
+@Controller
+public class ExceptionController {
+
+    @RequestMapping("/cal")
+    public String calc(Integer i, ModelMap map) {
+        int i1 = 10 / i;
+        map.put("msg", i1);
+        return "hello";
+    }
+
+    /**
+     * 告诉SpringMVC这个方法专门处理这个类中其它发生的异常
+     */
+    @ExceptionHandler(value = {ArithmeticException.class})
+    public ModelAndView exceptionHandler2(Exception e) {
+        System.out.println("controller exceptionHandler" + e);
+        // 交由视图解析器处理
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("ex", e);
+        modelAndView.addObject("msg", "发生了异常");
+        modelAndView.setViewName("hello");
+
+        return modelAndView;
+    }
+
+}
+
+/**
+ * 全局异常处理器，集中处理所有异常
+ * 使用ControllerAdvice，表明是异常处理类
+ * @author : huang.yaohua
+ * @date : 2022/6/16 17:47
+ */
+@ControllerAdvice
+public class GlobalExceptionHandler {
+    /**
+     * 
+     * 属性value限定可以处理的异常的类型
+     * 方法Exception类型入参用来接收异常信息
+     * 可以返回ModelAndView类型
+     *  如果有多个异常处理方法，精确匹配
+     *  全局异常处理器与本类异常处理器同时存在时，本类优先
+     */
+    @ExceptionHandler(value = {Exception.class})
+    public String globalExceptionHandler(Exception e) {
+        System.out.println("global exception handler" + e);
+        // 交由视图解析器处理
+        return "hello";
+    }
+
+
+}
+```
+
+### ResponseStatusExceptionResolver
+
+用于自定义异常，优先级低于`ExceptionHandlerExceptionResolver`
+
+```java
+/**
+ * 使用ResponseStatus注解
+ * @author : huang.yaohua
+ * @date : 2022/6/16 20:51
+ */
+@ResponseStatus(reason = "自定义异常",code = HttpStatus.NOT_ACCEPTABLE)
+public class MyException extends  RuntimeException{
+    
+}
+```
+
+
+
+### DefaultHandlerExceptionResolver
+
+如果异常没有前面的处理器都不能处理则会由`DefaultHandlerExceptionResolver`处理，可以处理spring自定义的异常
+
+### 自定义异常处理器
+
+自定义异常优先级最低
+
+```xml
+    <!--自定义异常处理器-->
+    <bean id="simpleMappingExceptionResolver"
+          class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <!-- 配置异常对应要去的页面-->
+        <property name="exceptionMappings">
+            <props>
+                <!--key 全类名，value 视图名-->
+                <prop key="java.lang.NullPointerException">error</prop>
+            </props>
+        </property>
+    </bean>
+```
+
+
+
+## SpringMVC运行流程
+
+1. 前端控制器（DispatcherServlet）收到请求，调用`doDispatch`
+2. 根据HandlerMapping中保存的请求映射信息找到处理当前请求的执行链（包含拦截器）
+3. 根据当前处理器找到对应的HandlerAdapter（适配器）
+4. 执行拦截器的preHandle
+5. 适配器执行目标方法
+   1. ModelAttribute注解标注的方法提前执行
+   2. 执行目标方法
+      - 确定方法入参
+        1. 是否Model、Map、原生servlet入参
+        2. 如果是自定义类型参数
+           1. 检查隐藏模型中是否存在，如果存在就从隐藏模型中取，如果没有，再看是否SessionAttribute标注的属性如果是则从Session中拿，如果拿不到就会抛异常
+           2. 以上都不是则使用反射创建对象
+6. 执行拦截器的postHandle
+7. 处理结果（页面渲染流程）
+   1. 如果有异常使用异常解析器处理异常，处理完成后返回ModelAndView
+   2. 调用render进行页面渲染
+      1. 视图解析器根据视图名创建视图对象
+      2. 视图对象调用render方法
+   3. 执行拦截器的afterCompletion
+
+![image-20220616215803317](E:\myCode\my-study\Markdown\picture\image-20220616215803317.png)
+
+## SpringMVC和Spring整合
+
+SpringMVC和Spring分容器，两个容器同时存在时，spring容器会成为spring-mvc容器的父容器，父容器不能从子容器中获取组件，
+
+子容器可以从父容器中获取组件
+
+spring.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <context:component-scan base-package="com.hyh">
+        <!--过滤Controller-->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+</beans>
+```
+
+spring-mvc.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc 	http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--包扫描规则： use-default-filters="false" 不使用默认过滤器，默认过滤器会将标注了Component、Service等注解的类
+加入容器
+<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/> 
+ 只处理Controller注解的类-->
+    <context:component-scan base-package="com.hyh" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+</beans>
+```
+
+
+
 ## 转发和重定向
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190319151923309.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDAwMTEyNQ==,size_16,color_FFFFFF,t_70)

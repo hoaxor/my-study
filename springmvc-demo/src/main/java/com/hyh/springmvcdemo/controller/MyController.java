@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hyh.springmvcdemo.model.User;
+import com.hyh.springmvcdemo.service.MyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -25,6 +27,9 @@ import java.util.Map;
  */
 @Controller
 public class MyController {
+
+    @Autowired
+    private MyService myService;
 
     /**
      * 告诉springmvc ,这个方法可以用来处理什么请求
@@ -71,6 +76,12 @@ public class MyController {
     private User hello4(@RequestParam("user") User user) {
         System.out.println(user);
         return user;
+    }
+
+    @RequestMapping("/hello5")
+    @ResponseBody
+    private String hello5() {
+        return myService.toString();
     }
 
     @ModelAttribute

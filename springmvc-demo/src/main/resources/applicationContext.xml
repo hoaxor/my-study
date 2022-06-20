@@ -5,6 +5,14 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc 	http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
+    <!--包扫描规则： use-default-filters="false" 不使用默认过滤器，默认过滤器会将标注了Component、Service等注解的类
+加入容器
+<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/> 
+ 只处理Controller注解的类-->
+    <context:component-scan base-package="com.hyh" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
     <!--通过配置conversion-service="conversionService" 使用自定义的conversionService-->
     <mvc:annotation-driven conversion-service="conversionService"/>
 
@@ -12,7 +20,6 @@
     <mvc:default-servlet-handler/>
 
 
-    <context:component-scan base-package="com.hyh"/>
     <!--配置试图解析器，前端控制器会从容器中获取用来初始化viewResolver组件-->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <!--        页面前缀-->
@@ -57,5 +64,30 @@
             </set>
         </property>
     </bean>
+
+    <!--设置拦截器-->
+    <mvc:interceptors>
+        <!--配置单个拦截器， 拦截所有请求-->
+        <!--        <bean id="interceptorTest" class="com.hyh.springmvcdemo.interceptor.InterceptorTest"/>-->
+        <!-- 配置单个拦截器， 拦截指定路径请求 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/interceptor1"/>
+            <bean id="interceptorTest" class="com.hyh.springmvcdemo.interceptor.InterceptorTest"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!--自定义异常处理器-->
+    <bean id="simpleMappingExceptionResolver"
+          class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <!-- 配置异常对应要去的页面-->
+        <property name="exceptionMappings">
+            <props>
+                <!--key 全类名，value 视图名-->
+                <prop key="java.lang.NullPointerException">error</prop>
+            </props>
+        </property>
+    </bean>
+
+    <import resource="classpath:spring-mybatis.xml"/>
 
 </beans>

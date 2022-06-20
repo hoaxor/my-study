@@ -12,5 +12,6 @@
 </head>
 <body>
 <h1>${requestScope.msg}</h1>
+<h1>${requestScope.ex}</h1>
 </body>
 </html>

@@ -3,21 +3,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-<!--    <context-param>
+    <!--创建Spring容器-->
+    <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:applicationContext.xml</param-value>
+        <param-value>classpath:spring.xml</param-value>
     </context-param>
 
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>-->
+    </listener>
 
     <servlet>
         <servlet-name>app</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <!-- 指定配置文件，如果不指定，默认会去找一个文件-->
+            <!-- 指定配置文件，如果不指定，默认会去找一个文件 创建SpringMVC容器-->
             <param-value>classpath:applicationContext.xml</param-value>
         </init-param>
         <!--    servlet启动时加载，servlet默认第一次访问时创建
@@ -63,7 +64,6 @@
         <filter-name>hiddenHttpMethodFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
-    
+
 
 </web-app>

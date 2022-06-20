@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--名称空间使用接口全类名-->
+<mapper namespace="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapper">
+    <!--    <typeAliases>-->
+    <!--        <typeAlias type="com.hyh.springmvcdemo.mybatis.model.OmOrder" alias="omOrder"/>-->
+    <!--    </typeAliases>-->
+    <!--级联属性的用法：POJO包含POJO使用级联属性-->
+    <resultMap id="omOrderResultMap" type="omOrder">
+        <id property="id" column="id"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="createDate" column="create_date"/>
+        <result property="orderState" column="order_state"/>
+        <!--使用级联属性封装查询结果-->
+        <result property="user.username" column="username"/>
+        <result property="user.phoneNumber" column="phone_number"/>
+    </resultMap>
+
+    <!-- association 的用法一： POJO包含POJO使用 association-->
+    <resultMap id="omOrderResultMap2" type="omOrder">
+        <id property="id" column="id"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="createDate" column="create_date"/>
+        <result property="orderState" column="order_state"/>
+        <!--使用 association 代替级联属性封装结果-->
+        <association property="user" javaType="com.hyh.springmvcdemo.mybatis.model.User">
+            <id property="username" column="username"/>
+            <result property="phoneNumber" column="phone_number"/>
+        </association>
+    </resultMap>
+
+    <!-- association 的用法一： POJO包含POJO使用 association-->
+    <resultMap id="omOrderResultMap2" type="omOrder">
+        <id property="id" column="id"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="createDate" column="create_date"/>
+        <result property="orderState" column="order_state"/>
+        <!--使用 association 代替级联属性封装omOrder.user，javaType user 属性全类名-->
+        <association property="user" javaType="com.hyh.springmvcdemo.mybatis.model.User">
+            <id property="username" column="username"/>
+            <result property="phoneNumber" column="phone_number"/>
+        </association>
+    </resultMap>
+
+    <!-- association 的用法二： POJO包含POJO使用，分布查询-->
+    <resultMap id="omOrderResultMap21" type="omOrder">
+        <id property="id" column="id"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="createDate" column="create_date"/>
+        <result property="orderState" column="order_state"/>
+        <!--使用 association 代替级联属性封装omOrder.user 
+        使用select关联查询语句ID，查询omOrder时使用关联的SQL查询封装成user
+        使用column，将指定列传递过去-->
+        <association property="user" select="queryUser" column="staff_id"/>
+    </resultMap>
+
+
+    <!--collection用法：POJO包含集合类型使用 collection-->
+    <resultMap id="omOrderResultMap3" type="omOrder">
+        <id property="id" column="id"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="createDate" column="create_date"/>
+        <result property="orderState" column="order_state"/>
+        <!--使用 association 代替级联属性封装结果
+           javaType Java类型全类名 -->
+        <association property="user" javaType="com.hyh.springmvcdemo.mybatis.model.User">
+            <id property="username" column="username"/>
+            <result property="phoneNumber" column="phone_number"/>
+        </association>
+        <!--      ofType 集合内元素类型  -->
+        <collection property="attrs" ofType="com.hyh.springmvcdemo.mybatis.model.OmProductAttr">
+            <id property="attrId" column="character_id"/>
+            <result property="attrValue" column="character_value"/>
+        </collection>
+    </resultMap>
+
+
+    <!-- id 方法名
+         resultType 返回值类型全类名
+         使用#{id}就告诉 MyBatis 创建一个预处理语句（PreparedStatement）参数，
+         在 JDBC 中，这样的一个参数在 SQL 中会由一个“?”来标识，并被传递到一个新的预处理语句中
+         -->
+    <select id="getOmOrder" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id}
+    </select>
+
+    <select id="getOmOrder2" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{arg0}
+          and order_state = #{arg1}
+    </select>
+
+    <select id="getOmOrder3" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id}
+          and order_state = #{orderState}
+    </select>
+
+    <select id="getOmOrder4" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id}
+          and order_state = #{orderState}
+    </select>
+
+    <select id="getOmOrder5" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id}
+          and order_state = #{order.orderState}
+    </select>
+
+    <select id="getOmOrder6" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+
+    <!--内建的类型别名 map 对应Java类型为 Map -->
+    <select id="getOmOrderMap" resultType="map">
+        select id, order_code orderCode, create_date createDate, order_state orderState
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+    <!--查询多条，返回一个map, 主键作为map的key, 返回多条记录时，resultType、resultMap值为集合内元素类型-->
+    <select id="getOmOrderMaps" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+    <!--返回多条记录时，resultType、resultMap值为集合内元素类型-->
+    <select id="getOmOrders" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+
+    <select id="getOmOrderAndUser" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state, 'ztesoft' username, '10086' phone_number
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+
+    <select id="getOmOrderAndUser2" resultMap="omOrderResultMap21">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+          and order_state = #{orderState}
+    </select>
+
+    <select id="queryUser" resultType="com.hyh.springmvcdemo.mybatis.model.User">
+        select a.username, a.mobile_tel 
+        from uos_staff a
+        where staff_id = #{staff_id}
+    </select>
+
+    <select id="getOmOrderAndProductAttrs" resultMap="omOrderResultMap3">
+        select o.id,
+               order_code,
+               o.create_date,
+               o.order_state,
+               'ztesoft' username,
+               '10086'   phone_number,
+               a.character_id,
+               a.character_value
+        from oss_iom.om_order o,
+             oss_iom.om_indep_prod_order_attr a
+        where id = #{id,jdbcType=INTEGER}
+          and a.service_order_id = o.id
+          and order_state = #{orderState}
+    </select>
+
+
+</mapper>

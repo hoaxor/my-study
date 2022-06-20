@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--resource 引入类路径下的配置文件
+        url 引用网络、磁盘的资源-->
+    <properties resource="jdbc.properties">
+    </properties>
+    <settings>
+        <setting name="logPrefix" value="hyh"/>
+    </settings>
+    <typeAliases>
+        <typeAlias type="com.hyh.springmvcdemo.mybatis.model.OmOrder" alias="omOrder"/>
+        <typeAlias type="com.hyh.springmvcdemo.mybatis.model.User" alias="user"/>
+    </typeAliases>
+    
+    <environments default="test">
+        <!-- 配置多个数据源-->
+        <environment id="development">
+            <!-- 事务管理器-->
+            <transactionManager type="JDBC"/>
+            <!-- 数据源-->
+            <dataSource type="POOLED">
+                <property name="driver" value="oracle.jdbc.OracleDriver"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+
+        <environment id="test">
+            <!-- 事务管理器-->
+            <transactionManager type="JDBC"/>
+            <!-- 数据源-->
+            <dataSource type="POOLED">
+                <property name="driver" value="oracle.jdbc.OracleDriver"/>
+                <property name="url" value="${jdbc.test.url}"/>
+                <property name="username" value="${jdbc.test.username}"/>
+                <property name="password" value="${jdbc.test.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+
+    <mappers>
+        <!-- 引入外部Mapper-->
+        <mapper resource="mapper/OmOrderMapper.xml"/>
+        <!-- class 使用映射器接口实现类的完全限定类名,使用此种方式要 -->
+    </mappers>
+
+
+</configuration>
+
