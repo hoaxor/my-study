@@ -53,7 +53,8 @@
         <!--使用 association 代替级联属性封装omOrder.user 
         使用select关联查询语句ID，查询omOrder时使用关联的SQL查询封装成user
         使用column，将指定列传递过去-->
-        <association property="user" select="queryUser" column="staff_id"/>
+        <association property="user" select="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapper.queryUser"
+                     column="staff_id"/>
     </resultMap>
 
 
@@ -153,16 +154,20 @@
     </select>
 
     <select id="getOmOrderAndUser2" resultMap="omOrderResultMap21">
-        select id, order_code, create_date, order_state, 263292 staff_id
+        select id, order_code, create_date, order_state
         from om_order
         where id = #{id,jdbcType=INTEGER}
           and order_state = #{orderState}
     </select>
 
-    <select id="queryUser" resultType="com.hyh.springmvcdemo.mybatis.model.User">
+    <resultMap id="user" type="com.hyh.springmvcdemo.mybatis.model.User">
+        <result property="phoneNumber" column="mobile_tel"/>
+    </resultMap>
+
+    <select id="queryUser" resultType="user">
         select a.username, a.mobile_tel
         from uos_staff a
-        where staff_id = #{staffId}
+        where staff_id = #{staff_id}
     </select>
 
     <select id="getOmOrderAndProductAttrs" resultMap="omOrderResultMap3">
