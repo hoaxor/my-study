@@ -153,16 +153,16 @@
     </select>
 
     <select id="getOmOrderAndUser2" resultMap="omOrderResultMap21">
-        select id, order_code, create_date, order_state
+        select id, order_code, create_date, order_state, 263292 staff_id
         from om_order
         where id = #{id,jdbcType=INTEGER}
           and order_state = #{orderState}
     </select>
 
     <select id="queryUser" resultType="com.hyh.springmvcdemo.mybatis.model.User">
-        select a.username, a.mobile_tel 
+        select a.username, a.mobile_tel
         from uos_staff a
-        where staff_id = #{staff_id}
+        where staff_id = #{staffId}
     </select>
 
     <select id="getOmOrderAndProductAttrs" resultMap="omOrderResultMap3">
