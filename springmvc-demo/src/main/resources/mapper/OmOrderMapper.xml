@@ -53,7 +53,8 @@
         <!--使用 association 代替级联属性封装omOrder.user 
         使用select关联查询语句ID，查询omOrder时使用关联的SQL查询封装成user
         使用column，将指定列传递过去-->
-        <association property="user" select="queryUser" column="staff_id"/>
+        <association property="user" select="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapper.queryUser"
+                     column="staff_id"/>
     </resultMap>
 
 
@@ -159,8 +160,12 @@
           and order_state = #{orderState}
     </select>
 
-    <select id="queryUser" resultType="com.hyh.springmvcdemo.mybatis.model.User">
-        select a.username, a.mobile_tel 
+    <resultMap id="user" type="com.hyh.springmvcdemo.mybatis.model.User">
+        <result property="phoneNumber" column="mobile_tel"/>
+    </resultMap>
+
+    <select id="queryUser" resultType="user">
+        select a.username, a.mobile_tel
         from uos_staff a
         where staff_id = #{staff_id}
     </select>
