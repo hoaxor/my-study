@@ -18,6 +18,11 @@
 
 ### Session
 
+session其实指的就是访问者从到达某个特定主页到离开为止的那段时间。 Session其实是利用Cookie进行信息处理的，当用户首先进行了请求后，服务端就在用户浏览器上创建了一个Cookie，当这个Session结束时，其实就是意味着这个Cookie就过期了。
+注：为这个用户创建的Cookie的名称是aspsessionid。这个Cookie的唯一目的就是为每一个用户提供不同的身份认证。
+————————————————
+[原文链接](https://blog.csdn.net/axin66ok/article/details/6175522)
+
 ### 生命周期
 
 #### 创建时机
