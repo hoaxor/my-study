@@ -4,12 +4,22 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--名称空间使用接口全类名-->
 <mapper namespace="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapper">
+    <!--    开启二级缓存 
+        eviction 清除策略有：默认LRU
+LRU – 最近最少使用：移除最长时间不被使用的对象。
+FIFO – 先进先出：按对象进入缓存的顺序来移除它们。
+SOFT – 软引用：基于垃圾回收器状态和软引用规则移除对象。
+WEAK – 弱引用：更积极地基于垃圾收集器状态和弱引用规则移除对象。
+flushInterval（刷新间隔）任意的正整数，以毫秒为单位。 默认情况是没有刷新间隔，缓存仅仅会在调用语句时刷新。
+size 引用数目 任意正整数，要注意欲缓存对象的大小和运行环境中可用的内存资源。默认值是 1024
+readOnly（只读）属性可以被设置为 true 或 false。只读的缓存会给所有调用者返回缓存对象的相同实例。 因此这些对象不能被修改。这就提供了可观的性能提升。而可读写的缓存会（通过序列化）返回缓存对象的拷贝。 速度上会慢一些，但是更安全，因此默认值是 false-->
+    <cache eviction="FIFO" flushInterval="100000" size="2048" type="org.mybatis.caches.ehcache.EhcacheCache"/>
     <!--    <typeAliases>-->
     <!--        <typeAlias type="com.hyh.springmvcdemo.mybatis.model.OmOrder" alias="omOrder"/>-->
     <!--    </typeAliases>-->
     <!--级联属性的用法：POJO包含POJO使用级联属性-->
     <resultMap id="omOrderResultMap" type="omOrder">
-        <id property="id" column="id"/>
+        <result property="id" column="id"/>
         <result property="orderCode" column="order_code"/>
         <result property="createDate" column="create_date"/>
         <result property="orderState" column="order_state"/>
@@ -31,20 +41,20 @@
         </association>
     </resultMap>
 
-    <!-- association 的用法一： POJO包含POJO使用 association-->
-    <resultMap id="omOrderResultMap2" type="omOrder">
-        <id property="id" column="id"/>
-        <result property="orderCode" column="order_code"/>
-        <result property="createDate" column="create_date"/>
-        <result property="orderState" column="order_state"/>
-        <!--使用 association 代替级联属性封装omOrder.user，javaType user 属性全类名-->
-        <association property="user" javaType="com.hyh.springmvcdemo.mybatis.model.User">
-            <id property="username" column="username"/>
-            <result property="phoneNumber" column="phone_number"/>
-        </association>
-    </resultMap>
+    <!--    &lt;!&ndash; association 的用法一： POJO包含POJO使用 association&ndash;&gt;
+        <resultMap id="omOrderResultMap2" type="omOrder">
+            <id property="id" column="id"/>
+            <result property="orderCode" column="order_code"/>
+            <result property="createDate" column="create_date"/>
+            <result property="orderState" column="order_state"/>
+            &lt;!&ndash;使用 association 代替级联属性封装omOrder.user，javaType user 属性全类名&ndash;&gt;
+            <association property="user" javaType="com.hyh.springmvcdemo.mybatis.model.User">
+                <id property="username" column="username"/>
+                <result property="phoneNumber" column="phone_number"/>
+            </association>
+        </resultMap>-->
 
-    <!-- association 的用法二： POJO包含POJO使用，分布查询-->
+    <!-- association 的用法二： POJO包含POJO使用，分步查询-->
     <resultMap id="omOrderResultMap21" type="omOrder">
         <id property="id" column="id"/>
         <result property="orderCode" column="order_code"/>
@@ -84,6 +94,12 @@
          在 JDBC 中，这样的一个参数在 SQL 中会由一个“?”来标识，并被传递到一个新的预处理语句中
          -->
     <select id="getOmOrder" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state
+        from om_order
+        where id = #{id}
+    </select>
+
+    <select id="getOmOrder11" resultMap="omOrderResultMap">
         select id, order_code, create_date, order_state
         from om_order
         where id = #{id}
@@ -154,7 +170,7 @@
     </select>
 
     <select id="getOmOrderAndUser2" resultMap="omOrderResultMap21">
-        select id, order_code, create_date, order_state
+        select id, order_code, create_date, order_state, 263292 staff_id
         from om_order
         where id = #{id,jdbcType=INTEGER}
           and order_state = #{orderState}

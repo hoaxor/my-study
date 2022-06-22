@@ -19,6 +19,8 @@ public interface OmOrderMapper {
      */
     //    @Select("select id, order_code orderCode from om_order where id = #{id}")
     OmOrder getOmOrder(Integer id);
+    
+    OmOrder getOmOrder11(Integer id);
 
     /**
      * 传入多个参数，且未指定Param注解时使用默认名arg0、arg1...获取参数值
@@ -58,9 +60,18 @@ public interface OmOrderMapper {
      */
     List<OmOrder> getOmOrders(@Param("id") Integer id, @Param("orderState") String orderState);
 
+    /**
+     * 使用级联属性
+     */
     List<OmOrder> getOmOrderAndUser(@Param("id") Integer id, @Param("orderState") String orderState);
-    
+
+    /**
+     * association 的用法二： 分步查询
+     */
     List<OmOrder> getOmOrderAndUser2(@Param("id") Integer id, @Param("orderState") String orderState);
 
+    /**
+     * collection用法：POJO包含集合类型使用 collection
+     */
     List<OmOrder> getOmOrderAndProductAttrs(@Param("id") Integer id, @Param("orderState") String orderState);
 }

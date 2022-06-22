@@ -675,7 +675,22 @@ public interface HttpServletRequest extends ServletRequest {
 
 ![img](\picture\70-16546750534954.png)**解决post提交方式的乱码：request.setCharacterEncoding("UTF-8");**
 
-**解决get提交的方式的乱码：parameter = newString(parameter.getbytes("iso8859-1"), "utf-8");**
+![image-20220622171023085](\picture\image-20220622171023085.png)
+
+**解决get提交的方式的乱码：parameter = newString(parameter.getbytes("iso-8859-1"), "utf-8");或修改Tomcat配置**
+
+原因：Tomcat默认编码是iso-8859-1
+
+```xml
+    <Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443"
+			   URIEncoding="utf-8"/>
+```
+
+
+
+
 
 
 

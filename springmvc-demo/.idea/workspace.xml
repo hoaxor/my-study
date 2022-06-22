@@ -10,10 +10,81 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6c8dffb1-5c18-4e6e-b207-4678dec750f8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/model/OmProductAttr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/model/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/artifacts/smm_demo_war.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/artifacts/smm_demo_war_exploded.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_2_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__ch_qos_logback_logback_core_1_2_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__com_alibaba_druid_1_2_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__com_alibaba_fastjson_1_2_83.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__com_fasterxml_classmate_1_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_annotations_2_12_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_core_2_12_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_databind_2_12_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__com_oracle_ojdbc7_10_0_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__commons_fileupload_commons_fileupload_1_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__commons_io_commons_io_2_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__javax_servlet_servlet_api_2_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__javax_validation_validation_api_1_1_0_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__net_sf_ehcache_ehcache_2_10_9_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_apiguardian_apiguardian_api_1_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_ehcache_modules_ehcache_api_3_10_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_ehcache_modules_ehcache_core_3_10_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_hibernate_hibernate_validator_5_3_6_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_jboss_logging_jboss_logging_3_3_0_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_8_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_8_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_8_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_8_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_mybatis_caches_mybatis_ehcache_1_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_mybatis_mybatis_3_4_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_mybatis_mybatis_spring_2_0_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_opentest4j_opentest4j_1_2_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_projectlombok_lombok_1_18_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_32.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_aop_5_3_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_beans_5_3_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_context_5_3_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_core_5_3_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_expression_5_3_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_jcl_5_3_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_jdbc_5_3_9.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_tx_5_3_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_web_5_3_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_springframework_spring_webmvc_5_3_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/libraries/Maven__org_terracotta_statistics_2_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/java/com/hyh/ssm/controller/OmOrderController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/java/com/hyh/ssm/dao/OmOrderDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/java/com/hyh/ssm/model/OmOrder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/java/com/hyh/ssm/model/OmProductAttr.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/java/com/hyh/ssm/model/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/java/com/hyh/ssm/service/MyService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/java/com/hyh/ssm/service/OmOrderService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/java/com/hyh/ssm/service/impl/MyServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/resources/jdbc/jdbc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/resources/mybatis/mapper/OmOrderMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/resources/mybatis/mybatis-config.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/resources/spring/applicationContext-mvc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/resources/spring/applicationContext.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../smm-demo/src/main/webapp/index.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_sf_ehcache_ehcache_2_10_9_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_ehcache_modules_ehcache_api_3_10_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_ehcache_modules_ehcache_core_3_10_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_caches_mybatis_ehcache_1_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_terracotta_statistics_2_1.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Markdown/Mybatis.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Markdown/Mybatis.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/springmvc_demo_war_exploded.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/springmvc_demo_war_exploded.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/mapper/OmOrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/mapper/OmOrderMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/model/OmOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hyh/springmvcdemo/mybatis/model/OmOrder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/OmOrderMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/OmOrderMapper.xml" afterDir="false" />
@@ -86,9 +157,9 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RecentsManager">
@@ -107,7 +178,7 @@
       <recent name="com.hyh.springmvcdemo.interceptor" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.OmOrderMapperTest.test101">
+  <component name="RunManager" selected="JUnit.OmOrderMapperTest.test12">
     <configuration name="OmOrderMapperTest.test1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="springmvc-demo" />
       <extension name="coverage">
@@ -172,7 +243,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="OmOrderMapperTest.test8" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="OmOrderMapperTest.test12" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="springmvc-demo" />
       <extension name="coverage">
         <pattern>
@@ -182,7 +253,7 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.hyh.springmvcdemo.mybatis.mapper" />
       <option name="MAIN_CLASS_NAME" value="com.hyh.springmvcdemo.mybatis.mapper.OmOrderMapperTest" />
-      <option name="METHOD_NAME" value="test8" />
+      <option name="METHOD_NAME" value="test12" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -291,11 +362,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.OmOrderMapperTest.test12" />
         <item itemvalue="JUnit.OmOrderMapperTest.test101" />
         <item itemvalue="JUnit.OmOrderMapperTest.test11" />
         <item itemvalue="JUnit.OmOrderMapperTest.test10" />
         <item itemvalue="JUnit.OmOrderMapperTest.test1" />
-        <item itemvalue="JUnit.OmOrderMapperTest.test8" />
       </list>
     </recent_temporary>
   </component>
@@ -319,7 +390,10 @@
       <workItem from="1655342474268" duration="7476000" />
       <workItem from="1655383540132" duration="3928000" />
       <workItem from="1655430044984" duration="16171000" />
-      <workItem from="1655714199974" duration="5831000" />
+      <workItem from="1655714199974" duration="13308000" />
+      <workItem from="1655794472505" duration="5527000" />
+      <workItem from="1655805695778" duration="928000" />
+      <workItem from="1655814454854" duration="1410000" />
     </task>
     <task id="LOCAL-00001" summary="springmvc">
       <created>1654769025550</created>
@@ -342,16 +416,49 @@
       <option name="project" value="LOCAL" />
       <updated>1655460202837</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="mybatis">
+      <created>1655720159700</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1655720159700</updated>
+    </task>
+    <task id="LOCAL-00005" summary="mybatis">
+      <created>1655720216158</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1655720216158</updated>
+    </task>
+    <task id="LOCAL-00006" summary="mybatis">
+      <created>1655774787268</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1655774787268</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="springmvc" />
     <MESSAGE value="springmvc+mybatis" />
-    <option name="LAST_COMMIT_MESSAGE" value="springmvc+mybatis" />
+    <MESSAGE value="mybatis" />
+    <option name="LAST_COMMIT_MESSAGE" value="mybatis" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -475,6 +582,16 @@
           <url>jar://$MAVEN_REPOSITORY$/org/springframework/spring-webmvc/5.3.12/spring-webmvc-5.3.12.jar!/org/springframework/web/servlet/DispatcherServlet.class</url>
           <line>707</line>
           <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$MAVEN_REPOSITORY$/org/mybatis/mybatis/3.4.6/mybatis-3.4.6.jar!/org/apache/ibatis/cache/impl/PerpetualCache.class</url>
+          <line>30</line>
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$MAVEN_REPOSITORY$/org/mybatis/mybatis/3.4.6/mybatis-3.4.6.jar!/org/apache/ibatis/cache/impl/PerpetualCache.class</url>
+          <line>34</line>
+          <option name="timeStamp" value="46" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

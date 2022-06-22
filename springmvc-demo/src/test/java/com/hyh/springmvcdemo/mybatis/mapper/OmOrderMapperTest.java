@@ -155,7 +155,7 @@ class OmOrderMapperTest {
             Integer i = 352880;
             String orderState = "10F";
             List<OmOrder> omOrders = mapper.getOmOrderAndUser2(i, orderState);
-            System.out.println(omOrders);
+            System.out.println(omOrders.get(0));
             //[OmOrder(id=352880, orderCode=00331708052336564, createDate=2017-08-18T16:15:52, orderState=10F, user=User(username=ztesoft, phoneNumber=null))]
         }
     }
@@ -169,6 +169,42 @@ class OmOrderMapperTest {
             List<OmOrder> omOrders = mapper.getOmOrderAndProductAttrs(i, orderState);
             System.out.println(omOrders);
             //[OmOrder(id=352880, orderCode=00331708052336564, createDate=2017-08-18T16:15:52, orderState=10F, user=User(username=ztesoft, phoneNumber=null))]
+        }
+    }
+
+    @Test
+    //测试一级缓存
+    public void test12() throws IOException {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            OmOrder omOrder = mapper.getOmOrder(i);
+            System.out.println(omOrder);
+            OmOrder omOrder1 = mapper.getOmOrder(i);
+            System.out.println(omOrder1 == omOrder);
+        }
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            OmOrder omOrder = mapper.getOmOrder(i);
+            System.out.println(omOrder);
+        }
+    }
+
+    @Test
+    //测试二级缓存
+    public void test13() throws IOException {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            OmOrder omOrder = mapper.getOmOrder(i);
+            System.out.println(omOrder);
+        }
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            OmOrderMapper mapper = session.getMapper(OmOrderMapper.class);
+            Integer i = 352880;
+            OmOrder omOrder = mapper.getOmOrder(i);
+            System.out.println(omOrder);
         }
     }
 }

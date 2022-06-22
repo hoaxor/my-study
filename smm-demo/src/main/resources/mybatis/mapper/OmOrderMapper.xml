@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--名称空间使用接口全类名-->
+<mapper namespace="com.hyh.ssm.dao.OmOrderDAO">
+
+    <!--级联属性的用法：POJO包含POJO使用级联属性-->
+    <resultMap id="omOrderResultMap" type="com.hyh.ssm.model.OmOrder">
+        <result property="id" column="id"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="createDate" column="create_date"/>
+        <result property="orderState" column="order_state"/>
+        <!--使用级联属性封装查询结果-->
+        <result property="user.username" column="username"/>
+        <result property="user.phoneNumber" column="phone_number"/>
+    </resultMap>
+
+    <select id="getOmOrder" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state, 'ztesoft' username, '10086' phone_number
+        from om_order
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!--oracle批量插入方式-->
+    <insert id="insertOmOrderBatch" parameterType="omOrder">
+        INSERT INTO om_order(id,order_code,create_date, order_state)
+        SELECT om_order_seq.nextval,s.* FROM
+        (
+        <foreach collection="orders" item="omOrder" separator="UNION ALL">
+            SELECT #{omOrder.orderCode},#{omOrder.createDate},#{omOrder.orderState}
+            FROM dual
+        </foreach>
+        )s
+    </insert>
+
+
+    <select id="getOrders" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state, 'ztesoft' username, '10086' phone_number
+        from om_order
+    </select>
+
+    <select id="getOrders2" resultMap="omOrderResultMap">
+        select id, order_code, create_date, order_state, 'ztesoft' username, '10086' phone_number
+        from om_order
+    </select>
+
+
+</mapper>

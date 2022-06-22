@@ -38,6 +38,11 @@
           <element id="library" level="project" name="Maven: org.mybatis:mybatis-spring:2.0.7" />
           <element id="library" level="project" name="Maven: com.oracle:ojdbc7:10.0.7" />
           <element id="library" level="project" name="Maven: com.alibaba:druid:1.2.5" />
+          <element id="library" level="project" name="Maven: org.ehcache.modules:ehcache-core:3.10.0" />
+          <element id="library" level="project" name="Maven: org.ehcache.modules:ehcache-api:3.10.0" />
+          <element id="library" level="project" name="Maven: org.terracotta:statistics:2.1" />
+          <element id="library" level="project" name="Maven: org.mybatis.caches:mybatis-ehcache:1.2.2" />
+          <element id="library" level="project" name="Maven: net.sf.ehcache:ehcache:2.10.9.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">
