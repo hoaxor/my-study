@@ -18,6 +18,7 @@ public class MyWebMvcConfigurer {
     public WebMvcConfigurer webMvcConfigurer() {
         return new WebMvcConfigurer() {
             @Override
+            // 添加自定义转换器
             public void addFormatters(FormatterRegistry registry) {
                 registry.addConverter((Converter<String, Integer>) source -> {
                     if (StringUtils.isNotEmpty(source)) {
