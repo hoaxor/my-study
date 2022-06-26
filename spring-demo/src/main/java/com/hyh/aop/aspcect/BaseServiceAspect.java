@@ -24,7 +24,7 @@ public class BaseServiceAspect {
      * 方法执行前执行
      * joinPoint 可以省略
      */
-    @Before("execution(public * com.hyh..BaseService.getSome(..))")
+    @Before("execution(public * com.hyh..BaseServadice.getSome(..))")
     public void before(JoinPoint joinPoint) {
         System.out.println("before");
         System.out.println(joinPoint.getTarget());

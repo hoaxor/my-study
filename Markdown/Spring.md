@@ -1,12 +1,36 @@
 # Spring
 
+Spring makes it easy to create Java enterprise applications.
 
+Spring is open source. It has a large and active community that provides continuous feedback based on a `diverse` range of real-world use cases. This has helped Spring to successfully evolve over a very long time.
 
 ## Spring 框架概述
 
 解决企业开发的复杂性
 
 轻量、面向接口编程，解耦、方便集成各种优秀框架（提供对各种优秀框架的直接支持，简化框架的使用）
+
+## 模块
+
+**IoC Container**
+
+**Aspect Oriented Programming**
+
+Data Access
+
+JMS
+
+Transaction
+
+Resources
+
+Validation、Data Binding And Type Conversion
+
+Spring Expression Language
+
+
+
+
 
 
 
@@ -129,19 +153,23 @@ byType(类中引用类型的数据类型和bean的class是同源的，可以使�
 
 ![image-20220515203846645](\picture\image-20220515203846645.png)
 
-@AutoWired
+@`AutoWired`
 
-spring框架提供，给引用类型赋值，支持byName，byType。默认byType
+spring框架提供，给引用类型赋值，支持`byName`，`byType`。默认`byType`按类型注入，按类型匹配到多个后按当前的变量名作为id去容器中匹配，未匹配上bean，容器启动会抛出异常。
+
+使用required属性，控制是否可以注入`null`
+
+@`Qualifier`使用指定的id去容器中查找bean
 
 ![image-20220515220222524](\picture\image-20220515220222524.png)
 
-@Resouce
+@`Resouce`
 
-jdk提供，默认使用byName，若byName查找bean失败则byType查找
+`jdk`提供，默认使用`byName`，若`byName`查找`bean`失败则`byType`查找
 
-@Value
+@`Value`
 
-基本数据类型+string，设置初始值
+基本数据类型+`string`，设置初始值
 
 **2.ioc操作两部分：**
 
@@ -180,7 +208,7 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
 
 ##### 泛型依赖注入
 
-
+![image-20220623114242552](\picture\image-20220623114242552.png)
 
 #### Ioc源码分析
 
@@ -231,6 +259,7 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
 
 ```java
     protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
+        // 初始化类型转换服务
         if (beanFactory.containsBean("conversionService") && beanFactory.isTypeMatch("conversionService", ConversionService.class)) {
             beanFactory.setConversionService((ConversionService)beanFactory.getBean("conversionService", ConversionService.class));
         }
@@ -251,8 +280,9 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
         }
 
         beanFactory.setTempClassLoader((ClassLoader)null);
+        //冻结配置
         beanFactory.freezeConfiguration();
-        // 初始化单实例bean
+        // 初始化所有非懒加载的单实例bean
         beanFactory.preInstantiateSingletons();
     }
 
@@ -260,7 +290,7 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
         if (this.logger.isTraceEnabled()) {
             this.logger.trace("Pre-instantiating singletons in " + this);
         }
-        // 获取所有beanI
+        // 获取所有beanId
         List<String> beanNames = new ArrayList(this.beanDefinitionNames);
         Iterator var2 = beanNames.iterator();
 
@@ -305,7 +335,7 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
                         bean = this.getBean("&" + beanName);
                         break;
                     }
-
+                    // org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean
                     this.getBean(beanName);
                 }
             } while(!(bean instanceof FactoryBean));
@@ -326,10 +356,218 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
         }
     }
 
+    protected <T> T doGetBean(String name, @Nullable Class<T> requiredType, @Nullable Object[] args, boolean typeCheckOnly) throws BeansException {
+        String beanName = this.transformedBeanName(name);
+        // 从已经创建的单例中获取
+        Object sharedInstance = this.getSingleton(beanName);
+        Object bean;
+        if (sharedInstance != null && args == null) {
+            if (this.logger.isTraceEnabled()) {
+                if (this.isSingletonCurrentlyInCreation(beanName)) {
+                    this.logger.trace("Returning eagerly cached instance of singleton bean '" + beanName + "' that is not fully initialized yet - a consequence of a circular reference");
+                } else {
+                    this.logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
+                }
+            }
+
+            bean = this.getObjectForBeanInstance(sharedInstance, name, beanName, (RootBeanDefinition)null);
+        } else {
+            if (this.isPrototypeCurrentlyInCreation(beanName)) {
+                throw new BeanCurrentlyInCreationException(beanName);
+            }
+
+            BeanFactory parentBeanFactory = this.getParentBeanFactory();
+            if (parentBeanFactory != null && !this.containsBeanDefinition(beanName)) {
+                String nameToLookup = this.originalBeanName(name);
+                if (parentBeanFactory instanceof AbstractBeanFactory) {
+                    return ((AbstractBeanFactory)parentBeanFactory).doGetBean(nameToLookup, requiredType, args, typeCheckOnly);
+                }
+
+                if (args != null) {
+                    return parentBeanFactory.getBean(nameToLookup, args);
+                }
+
+                if (requiredType != null) {
+                    return parentBeanFactory.getBean(nameToLookup, requiredType);
+                }
+
+                return parentBeanFactory.getBean(nameToLookup);
+            }
+            // false
+            if (!typeCheckOnly) {
+                // 标记成一创建
+                this.markBeanAsCreated(beanName);
+            }
+
+            try {
+                // bean的定义信息
+                RootBeanDefinition mbd = this.getMergedLocalBeanDefinition(beanName);
+                this.checkMergedBeanDefinition(mbd, beanName, args);
+                // bean依赖的bean 注解的dependsOn属性
+                String[] dependsOn = mbd.getDependsOn();
+                String[] var11;
+                // 先创建依赖的bean
+                if (dependsOn != null) {
+                    var11 = dependsOn;
+                    int var12 = dependsOn.length;
+
+                    for(int var13 = 0; var13 < var12; ++var13) {
+                        String dep = var11[var13];
+                        if (this.isDependent(beanName, dep)) {
+                            throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
+                        }
+
+                        this.registerDependentBean(dep, beanName);
+
+                        try {
+                            this.getBean(dep);
+                        } catch (NoSuchBeanDefinitionException var24) {
+                            throw new BeanCreationException(mbd.getResourceDescription(), beanName, "'" + beanName + "' depends on missing bean '" + dep + "'", var24);
+                        }
+                    }
+                }
+                // 是单例
+                if (mbd.isSingleton()) {
+                    // 创建单实例bean ，第二个参数是bean工厂
+                    // org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(java.lang.String, org.springframework.beans.factory.ObjectFactory<?>)
+                    sharedInstance = this.getSingleton(beanName, () -> {
+                        try {
+                            // 创建bean
+                            return this.createBean(beanName, mbd, args);
+                        } catch (BeansException var5) {
+                            this.destroySingleton(beanName);
+                            throw var5;
+                        }
+                    });
+                    bean = this.getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+                } else if (mbd.isPrototype()) {
+                    var11 = null;
+
+                    Object prototypeInstance;
+                    try {
+                        this.beforePrototypeCreation(beanName);
+                        prototypeInstance = this.createBean(beanName, mbd, args);
+                    } finally {
+                        this.afterPrototypeCreation(beanName);
+                    }
+
+                    bean = this.getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
+                } else {
+                    String scopeName = mbd.getScope();
+                    Scope scope = (Scope)this.scopes.get(scopeName);
+                    if (scope == null) {
+                        throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
+                    }
+
+                    try {
+                        Object scopedInstance = scope.get(beanName, () -> {
+                            this.beforePrototypeCreation(beanName);
+
+                            Object var4;
+                            try {
+                                var4 = this.createBean(beanName, mbd, args);
+                            } finally {
+                                this.afterPrototypeCreation(beanName);
+                            }
+
+                            return var4;
+                        });
+                        bean = this.getObjectForBeanInstance(scopedInstance, name, beanName, mbd);
+                    } catch (IllegalStateException var23) {
+                        throw new BeanCreationException(beanName, "Scope '" + scopeName + "' is not active for the current thread; consider defining a scoped proxy for this bean if you intend to refer to it from a singleton", var23);
+                    }
+                }
+            } catch (BeansException var26) {
+                this.cleanupAfterBeanCreationFailure(beanName);
+                throw var26;
+            }
+        }
+
+        if (requiredType != null && !requiredType.isInstance(bean)) {
+            try {
+                T convertedBean = this.getTypeConverter().convertIfNecessary(bean, requiredType);
+                if (convertedBean == null) {
+                    throw new BeanNotOfRequiredTypeException(name, requiredType, bean.getClass());
+                } else {
+                    return convertedBean;
+                }
+            } catch (TypeMismatchException var25) {
+                if (this.logger.isTraceEnabled()) {
+                    this.logger.trace("Failed to convert bean '" + name + "' to required type '" + ClassUtils.getQualifiedName(requiredType) + "'", var25);
+                }
+
+                throw new BeanNotOfRequiredTypeException(name, requiredType, bean.getClass());
+            }
+        } else {
+            return bean;
+        }
+    }
+
+    public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
+        Assert.notNull(beanName, "Bean name must not be null");
+        synchronized(this.singletonObjects) {
+            Object singletonObject = this.singletonObjects.get(beanName);
+            if (singletonObject == null) {
+                if (this.singletonsCurrentlyInDestruction) {
+                    throw new BeanCreationNotAllowedException(beanName, "Singleton bean creation not allowed while singletons of this factory are in destruction (Do not request a bean from a BeanFactory in a destroy method implementation!)");
+                }
+
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
+                }
+
+                this.beforeSingletonCreation(beanName);
+                boolean newSingleton = false;
+                boolean recordSuppressedExceptions = this.suppressedExceptions == null;
+                if (recordSuppressedExceptions) {
+                    this.suppressedExceptions = new LinkedHashSet();
+                }
+
+                try {
+                    // bean工厂生产bean
+                    singletonObject = singletonFactory.getObject();
+                    newSingleton = true;
+                } catch (IllegalStateException var16) {
+                    singletonObject = this.singletonObjects.get(beanName);
+                    if (singletonObject == null) {
+                        throw var16;
+                    }
+                } catch (BeanCreationException var17) {
+                    BeanCreationException ex = var17;
+                    if (recordSuppressedExceptions) {
+                        Iterator var8 = this.suppressedExceptions.iterator();
+
+                        while(var8.hasNext()) {
+                            Exception suppressedException = (Exception)var8.next();
+                            ex.addRelatedCause(suppressedException);
+                        }
+                    }
+
+                    throw ex;
+                } finally {
+                    if (recordSuppressedExceptions) {
+                        this.suppressedExceptions = null;
+                    }
+
+                    this.afterSingletonCreation(beanName);
+                }
+
+                if (newSingleton) {
+                    this.addSingleton(beanName, singletonObject);
+                }
+            }
+
+            return singletonObject;
+        }
+    }
 
 ```
 
+#### 面试题
 
+[Spring Bean的生命周期](https://blog.csdn.net/weixin_44129618/article/details/121989474)
+
+[循环依赖](https://blog.csdn.net/weixin_44129618/article/details/122839774)
 
 
 
@@ -338,6 +576,12 @@ jdk提供，默认使用byName，若byName查找bean失败则byType查找
 面向切面编程，在不修改源码的前提下进行功能增强。
 
 在程序运行期间，将某段代码动态切入到方法的指定位置。
+
+在软件业，`AOP`为`Aspect Oriented Programming`的缩写，意为：面向切面编程，通过预编译方
+式和运行期动态代理实现程序功能的统一维护的一种技术。`AOP`是`OOP`的延续，是软件开发中的一个
+热点，也是`Spring`框架中的一个重要内容，是函数式编程的一种衍生范型。利用`AOP`可以对业务逻辑
+的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高
+了开发的效率。
 
 #### JDK动态代理
 
@@ -472,11 +716,25 @@ public interface Calculator {
 
 ![image-20220515223556530](\picture\image-20220515223556530.png)
 
+`Aspect`（切面）： `Aspect` 声明类似于 `Java` 中的类声明，在 `Aspect` 中会包含着一些 `Pointcut` 以及相应的 `Advice`。
+`Joint point`（连接点）：表示在程序中明确定义的点，典型的包括方法调用，对类成员的访问以及异常处理程序块的执行等等，它自身还可以嵌套其它 `joint point`。
+`Pointcut`（切点）：表示一组 `joint point`，这些 `joint point` 或是通过逻辑关系组合起来，或是通过通配、正则表达式等方式集中起来，它定义了相应的 `Advice` 将要发生的地方。
+`Advice`（增强）：`Advice` 定义了在 `Pointcut` 里面定义的程序点具体要做的操作，它通过 `before`、`after` 和 `around` 来区别是在每个 `joint point` 之前、之后还是代替执行的代码。
+`Target`（目标对象）：织入 `Advice` 的目标对象.。
+`Weaving`（织入）：将 Aspect 和其他对象连接起来, 并创建 `Adviced object` 的过程
+
+![这里写图片描述](\picture\70.png)
+
+————————————————
+`AOP`中的`Joinpoint`可以有多种类型：构造方法调用，字段的设置和获取，方法的调用，方法的执行，异常的处理执行，类的初始化。也就是说在`AOP`的概念中我们可以在上面的这些`Joinpoint`上织入我们自定义的`Advice`，但是在`Spring`中却没有实现上面所有的`joinpoint`，确切的说，`Spring`只支持方法执行类型的`Joinpoint`。
+
+[原文链接](https://blog.csdn.net/q982151756/article/details/80513340)
+
 https://www.jianshu.com/p/2e8409bc8c3b
 
 #### 通知类型：
 
-@Before，前置通知
+@`Before`，前置通知
 
 ```java
     /**
@@ -492,7 +750,7 @@ https://www.jianshu.com/p/2e8409bc8c3b
 
 
 
-@AfterReturning，后置通知
+@`AfterReturning`，后置通知
 
 ```java
     /**
@@ -510,7 +768,7 @@ https://www.jianshu.com/p/2e8409bc8c3b
 
 
 
-@Around，环绕通知
+@`Around`，环绕通知
 
 ```java
     /**
@@ -531,7 +789,7 @@ https://www.jianshu.com/p/2e8409bc8c3b
 
 
 
-@AfertThrowing，异常通知
+@`AfertThrowing`，异常通知
 
 ```java
     /**
@@ -547,7 +805,7 @@ https://www.jianshu.com/p/2e8409bc8c3b
 
 
 
-@After，最终通知
+@`After`，最终通知，无论方法执行是否发生异常都会执行
 
 ```java
     @Around("execution(public * com.hyh..BaseService.getSome(..))")
@@ -940,11 +1198,11 @@ hibernate使用HibernateTransactionManager
 
 
 
-#### 事务失效场景
+### 事务失效场景
 
 https://www.cnblogs.com/konglxblog/p/16229394.html
 
-## 一、事务方法访问修饰符非public，导致事务失效
+#### 一、事务方法访问修饰符非public，导致事务失效
 
 如果事务是static、final的，同样无法通过动态代理，事务也是不会生效的。
 　　Spring的声明式事务是基于动态代理实现的，我们无法重写final修饰的方法；
@@ -955,3 +1213,70 @@ https://www.cnblogs.com/konglxblog/p/16229394.html
 **2、解决**
 方式一：将方法修饰符改为public
 方式二：开启AspectJ代理模式
+
+
+
+## 单元测试
+
+### junit4
+
+```java
+package junit;
+ 
+import com.chen.pojo.service.UserService;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+ 
+import java.util.List;
+import java.util.Map;
+ 
+@RunWith(SpringJUnit4ClassRunner.class)//指定测试框架
+@ContextConfiguration("classpath:application.xml")//加载配置文件
+public class JUNIT4 {
+    @Autowired
+    private UserService userService;
+    @Test
+    public void test1(){
+        List<Map<String, Object>> maps = userService.querylist();
+        for (Map<String, Object> map : maps) {
+            System.out.println(map);
+        }
+    }
+}
+```
+
+### junit5
+
+```java
+package junit;
+ 
+import com.chen.pojo.service.UserService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+ 
+import java.util.List;
+import java.util.Map;
+ 
+//junit5测试
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration("classpath:application.xml")
+public class JUnit5 {
+    @Autowired
+    private UserService userService;
+    @Test
+    public void test(){
+        List<Map<String, Object>> list = userService.querylist();
+        for (Map<String, Object> map : list) {
+            System.out.println(map);
+        }
+    }
+ 
+}
+```
+

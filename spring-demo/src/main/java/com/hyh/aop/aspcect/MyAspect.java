@@ -11,9 +11,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 
-import java.util.Arrays;
-import java.util.Date;
-
 /**
  * 切面类注解，表明当前类是切面类
  *
@@ -38,7 +35,6 @@ public class MyAspect {
     public void before() {
         //切面代码
         System.out.println("Before");
-
     }
 
     /**

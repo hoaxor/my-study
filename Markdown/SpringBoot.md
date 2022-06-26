@@ -1020,7 +1020,33 @@ public WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcPropert
     }
 ```
 
+### SpringMVC自动配置
+
+org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
+
+
+
 ### 请求参数映射
+
+前端处理器`DispatcherServlet`处理流程
+
+获取Handler
+
+![image-20220626221417081](\picture\image-20220626221417081.png)
+
+
+
+获取参数
+
+矩阵变量
+
+springboot 默认禁用了矩阵变量功能
+
+使用前，需要手动开启
+
+2.6.7版本默认开启
+
+
 
 REST
 

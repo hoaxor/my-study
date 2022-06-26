@@ -16,10 +16,10 @@
 
 
 
-### Session
+## Session
 
 session其实指的就是访问者从到达某个特定主页到离开为止的那段时间。 Session其实是利用Cookie进行信息处理的，当用户首先进行了请求后，服务端就在用户浏览器上创建了一个Cookie，当这个Session结束时，其实就是意味着这个Cookie就过期了。
-注：为这个用户创建的Cookie的名称是aspsessionid。这个Cookie的唯一目的就是为每一个用户提供不同的身份认证。
+注：为这个用户创建的Cookie的名称是jsessionid。这个Cookie的唯一目的就是为每一个用户提供不同的身份认证。
 ————————————————
 [原文链接](https://blog.csdn.net/axin66ok/article/details/6175522)
 
@@ -39,7 +39,7 @@ session其实指的就是访问者从到达某个特定主页到离开为止的�
 
 - 服务器关闭
 
-### Cookies
+## Cookies
 
 `cookie` 是一种发送到客户浏览器的文本串句柄，并保存在客户机硬盘上，可以用来在某个WEB站点会话间持久的保持数据。
 
@@ -49,5 +49,27 @@ session其实指的就是访问者从到达某个特定主页到离开为止的�
 
 浏览器再次访问服务器会携带服务器发给浏览器的`Cookie`
 
-服务器端通过浏览器发过来的Cookie做不同
+服务器端通过浏览器发过来的Cookie来校验用户身份
+
+
+
+①Cookie可以存储在浏览器或者本地，Session只能存在服务器
+②session 能够存储任意的 java 对象，cookie 只能存储 String 类型的对象
+③Session比Cookie更具有安全性（Cookie有安全隐患，通过拦截或本地文件找得到你的cookie后可以进行攻击）
+④Session占用服务器性能，Session过多，增加服务器压力
+⑤单个Cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个Cookie，Session是没有大小限制和服务器的内存大小有关。
+
+————————————————
+版权声明：本文为CSDN博主「辰兮要努力」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_45393094/article/details/104747360
+
+
+
+## 令牌机制
+
+F5刷新页面会将之前的请求在发一次，表单重复提交
+
+
+
+
 

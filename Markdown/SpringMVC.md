@@ -675,7 +675,9 @@ SpringMVC为逻辑视图名的解析提供了不同的策略，可以在Spring W
 
 ## 数据绑定流程
 
-- Spring MVC将`ServletRequest`对象传递给`DataBinder`（通过WebDataBinderFactory创建）。
+
+
+- Spring MVC将`ServletRequest`对象传递给`DataBinder`（`DataBinder`通过`WebDataBinderFactory`创建）。
 - 控制类的处理方法将形参对象传递给`DataBinder`
 - ``DataBinder`调用`ConversionService`组件，使用转换服务内部的转换器`converter`进行数据类型的转换工作。
 - 然后将`ServletRequest`对象中的请求参数填充到方法参数对象中。对绑定好的数据会进行数据合法性检验

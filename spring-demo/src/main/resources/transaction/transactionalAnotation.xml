@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--注解版事务
+        1. 声明事务管理器
+        2. 开启基于注解的事务功能
+        3. 方法上加事务注解
+        -->
+    <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"/>
+    <!--        2. 开启基于注解的事务功能 , 当事务管理器ID不为transactionManager是需要
+        添加transaction-manager 告诉Spring使用哪个事务管理器-->
+    <tx:annotation-driven transaction-manager="dataSourceTransactionManager"/>
 </beans>

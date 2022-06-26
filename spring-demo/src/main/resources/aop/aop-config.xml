@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--基于配置的aop -->
+    <bean id="myAspect" class="com.hyh.aop.aspcect.MyAspect"/>
+    <aop:config>
+        <!-- -->
+        <aop:aspect id="getSome" ref="myAspect">
+            <!--           提取可重用的切入点-->
+            <aop:pointcut id="myPointCut" expression="execution(* com.hyh..get*(..))"/>
+            <!--            最终-->
+            <aop:after method="after" pointcut-ref="myPointCut"/>
+            <!--            前置-->
+            <aop:before method="before" pointcut="execution(* com.hyh..*(..))"/>
+            <!--            返回-->
+            <!--           returning 用法同注解版                     -->
+            <aop:after-returning method="afterReturning"
+                                 pointcut="execution(* com.hyh..*(..))"
+                                 returning="student"/>
+            <!--            异常-->
+            <!--           throwing 用法同注解版                     -->
+            <aop:after-throwing method="afterThrowing"
+                                pointcut="execution(* com.hyh..*(..))"
+                                throwing="ex"/>
+        </aop:aspect>
+    </aop:config>
+
+</beans>
