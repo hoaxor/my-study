@@ -325,11 +325,11 @@ HotSpot VM的实现S，GC按照回收区域又分为两大种类，一种是部�
 
 - 打印GC详细信息：`-XX:+PrintGCDetails`
 
-![PrintGCDetails详解](C:\Users\MLY\Desktop\MarkDown\20200314215636987.png)
+![PrintGCDetails详解](\picture\20200314215636987.png)
 
 - 查看所有参数的默认初始值：`-XX:+PrintFlagsInitial`
 - 查看所有参数的最终值（可能会存在修改，不再是初始值）：`-XX:PrintFlagsFinal`
-- ​
+- 
 
 ##### TLAB（Thread Local Allocation Buffer）
 
@@ -571,7 +571,7 @@ byte、short、char在存储前被转换为int，boolean也被转成int，0表�
   - 如果`CompactFields`参数为true（默认为true），子类的窄变量可能插入到父类变量的空隙。
 - 对象填充（Padding）
 - 小结
-- ![](C:\Users\MLY\Desktop\Markdown\对象内存布局.jpg)
+- ![](\picture\对象内存布局-16571125837821-16571125902662.jpg)
 
 ### 对象访问定位
 
@@ -579,7 +579,7 @@ byte、short、char在存储前被转换为int，boolean也被转成int，0表�
 
   - 图示
 
-  ![](C:\Users\11690\Desktop\Markdown\对象定位-句柄访问.png)
+  ![](\picture\对象定位-句柄访问.png)
 
   - 实现
     - 句柄包含对象实例数据的指针和对象类型信息的指针，间接访问对象实例数据和对象类型数据。
@@ -590,7 +590,7 @@ byte、short、char在存储前被转换为int，boolean也被转成int，0表�
 
   - 图示
 
-  ![](C:\Users\11690\Desktop\Markdown\对象定位-直接指针.png)
+  ![](\picture\对象定位-直接指针.png)
 
   - 实现
     - 局部变量表中的引用对象直接指向堆空间的对象实例数据。
@@ -609,7 +609,7 @@ byte、short、char在存储前被转换为int，boolean也被转成int，0表�
 
 
 
-![](C:\Users\11690\Desktop\Markdown\Java代码编译和执行过程.png)
+![](\picture\Java代码编译和执行过程.png)
 
 - `-Xint`切换成编译器模式
 - `-Xcomp`切换成JIT模式
@@ -648,7 +648,7 @@ byte、short、char在存储前被转换为int，boolean也被转成int，0表�
 
     - 回边计数器
 
-      ![](C:\Users\11690\Desktop\Markdown\回边计数器.png)
+      ![](\picture\回边计数器.png)
 
     - 方法调用计数器
 
@@ -656,14 +656,14 @@ byte、short、char在存储前被转换为int，boolean也被转成int，0表�
       - 这个阈值可以通过参数`-XX:CompileThreshold`来设置。
       - 图示（是否超过阈值会判断方法调用计数器和回边计数器的和是否超过阈值）
 
-      ![](C:\Users\11690\Desktop\Markdown\方法调用计数器.jpg)
+      ![](\picture\方法调用计数器.jpg)
 
       - 热度衰减
         - 如果不做任何设置，方法调用计数器统计的并不是方法被调用的绝对次数，而是一个相对的执行频率，即一段时间之内方法被调用的次数，当超过**时间限度**，如果方法的调用次数仍然不足以让它提交给即时编译器编译，那这个方法的程序计数器就会被减少一半，这个过程称为方法调用计数器热度的衰减（Counter Decay）,而这段时间就称为此方法统计的半衰周期（Counter Half Life Time）。
         - 进行热度衰减的动作是在虚拟机进行垃圾收集时顺便进行的，可以使用虚拟机参数`-XX:-UseCounterDecay`来关闭热度衰减，让方法计数器统计方法调用的绝对次数，这样的话只要系统运行时间够长，绝大多数方法都会被编译成本地代码。
         - 可以使用`-XX:CounterHalfLifeTime`参数设置半衰周期的时间，单位是秒。
 
-![](C:\Users\11690\Desktop\Markdown\执行引擎.jpg)
+![](\picture\执行引擎.jpg)
 
 ### AOT编译器
 
@@ -745,7 +745,7 @@ byte、short、char在存储前被转换为int，boolean也被转成int，0表�
           s.intern();// 字符串常量池中已经存在
           String s2 = "1";
           System.out.println(s == s2);//jdk6 false;jdk7/8 false
-
+  
           String s3 = new String("1") + new String("1");//不会在字符串常量池中生成"11"对象
           s3.intern();// 常量池中是s3的引用的复制品
           String s4 = "11";
@@ -874,13 +874,13 @@ public class StringTableGCTest {
 
 - 分代收集算法
 
-  ![](C:\Users\11690\Desktop\Markdown\分代收集算法.png)
+  ![](\picture\分代收集算法.png)
 
-  ![](C:\Users\11690\Desktop\Markdown\分代收集算法-2.png)
+  ![](\picture\分代收集算法-2.png)
 
 - 总结
 
-![](C:\Users\11690\Desktop\Markdown\垃圾回收算法比较.jpg)
+![](\picture\垃圾回收算法比较.jpg)
 
 #### 增量收集算法（Incremental Collecting）
 
@@ -941,7 +941,7 @@ public class StringTableGCTest {
   - 并发式垃圾回收器与应用线程交替工作，以尽量减少应用程序的停顿时间
   - 独占式垃圾回收器`STW`一旦运行，就停止应用程序中的所有用户线程，直到垃圾回收过程完全结束。
 
-  ![](C:\Users\11690\Desktop\Markdown\并发并行垃圾回收器.jpg)
+  ![](\picture\并发并行垃圾回收器.jpg)
 
 - 按碎片处理方式分，可分为压缩式垃圾回收器和非压缩式垃圾回收器。
 
@@ -958,11 +958,11 @@ public class StringTableGCTest {
 - **内存占用**：Java堆区所占用的内存大小
 - 快速：一个对象从诞生到被回收所经历的时间。
 
-![](C:\Users\MLY\Desktop\Markdown\垃圾回收器吞吐量与暂停时间关系.png)
+![](\picture\垃圾回收器吞吐量与暂停时间关系.png)
 
 #### 垃圾回收器发展史
 
-![](C:\Users\MLY\Desktop\Markdown\垃圾回收器发展史.png)
+![](\picture\垃圾回收器发展史.png)
 
 #### 经典垃圾回收器
 
@@ -970,9 +970,9 @@ public class StringTableGCTest {
 - 并行回收器：ParNew、Parallel Scavenge、Parallel Old
 - 并发回收器：CMS、G1
 
-![](C:\Users\MLY\Desktop\Markdown\垃圾回收器与垃圾分代关系图.png)
+![](\picture\垃圾回收器与垃圾分代关系图.png)
 
-![](C:\Users\11690\Desktop\Markdown\垃圾回收器的组合关系.png)
+![](\picture\垃圾回收器的组合关系.png)
 
 红色虚线：在`JDK8`中废弃，在`JDK9`中移除
 
@@ -998,9 +998,9 @@ public class StringTableGCTest {
   - 在桌面应用场景，可用内存一般不大（几十上百MB），可以在较短时间内完成垃圾收集
   - 在Hotspot虚拟机中，使用`-XX:+UseSerialGC`参数可以指定年轻代和老年代都是用串行收集器
     - 等价于新生代用Serial GC且老年代用Serial Old GC
-  - ​
+  - 
 
-![](C:\Users\11690\Desktop\Markdown\Serial回收器.jpg)
+![](\picture\Serial回收器.jpg)
 
 #### ParNew回收器：并行回收
 
@@ -1011,7 +1011,7 @@ public class StringTableGCTest {
 - ParNew回收器运行在多核CPU环境下，可以充分发挥CPU多核心的硬件优势，可以更快速的完成垃圾收集，提升程序吞吐量 。
 - 使用`-XX:+UserParNewGC`开启，使用`-XX:ParallelGCThreads`限制线程数量，默认开启和CPU核心数相同的线程数。
 
-![](C:\Users\11690\Desktop\Markdown\ParNew回收器.jpg)
+![](\picture\ParNew回收器.jpg)
 
 #### Parallel Scavenge：吞吐量优先
 
@@ -1066,7 +1066,7 @@ public class StringTableGCTest {
 - `-XX:ParallelCMSThreads`设置CMS线程数量。
   - CMS默认启动的线程是（(ParallelGCThreads + 3) / 4），ParallelGCThreads 是年轻代并行收集器的线程数，当CPU资源比较紧张时，收到CMS收集线程影响，应用程序的性能在垃圾回收阶段可能会非常糟糕。
 
-![](C:\Users\11690\Desktop\Markdown\CMS回收器.jpg)
+![](\picture\CMS回收器.jpg)
 
 #### G1（Garbage First）回收器：区域分代化
 
@@ -1099,9 +1099,9 @@ public class StringTableGCTest {
       - 增加了新的内存区域Humongous内存区域，主要用于存储对象（超过0.5个region就被认定为大对象）。
         - 对于堆中的大对象，默认直接会被分配到老年代，但是如果它是一个短期存在的大对象，就会对垃圾收集器造成负面影响，为了解决这个问题，G1划分了一个Humongous区，它专门用来存放大对象，如果一个H区装不下一个大对象，那么G1会寻找连续的H区来存储，为了能找到连续的H区，有事不得不启动Full GC。G1的大多数行为都把H区作为老年代的一部分来看待。
 
-    <img src="C:\Users\11690\Desktop\Markdown\分区Region.png" style="zoom:50%;" />
+    <img src="\picture\分区Region.png" style="zoom:50%;" />
 
-    <img src="C:\Users\11690\Desktop\Markdown\分区Region2.png" style="zoom:50%;" />
+    <img src="\picture\分区Region2.png" style="zoom:50%;" />
 
     - 和其它垃圾收集器不同，它同时兼顾年轻代和老年代。
 
@@ -1156,9 +1156,9 @@ public class StringTableGCTest {
   - Mixed GC
   - 如果需要，单线程、独占式、高强度的Full GC还是继续存在的，它针对GC的评估失败提供了一种失败保护机制，即强力回收
 
-  <img src="C:\Users\11690\Desktop\Markdown\G1回收器的回收过程.png" style="zoom:50%;" />
+  <img src="\picture\G1回收器的回收过程.png" style="zoom:50%;" />
 
-  <img src="C:\Users\11690\Desktop\Markdown\G1回收器的回收过程2.png" style="zoom:50%;" />
+  <img src="\picture\G1回收器的回收过程2.png" style="zoom:50%;" />
 
 - G1回收器优化建议
   - 避免使用`-Xmn`或`-XX:NewRatio`等相关选项显示设置年轻代的大小（固定年轻代大小会覆盖暂停时间目标）
@@ -1167,7 +1167,7 @@ public class StringTableGCTest {
 
 #### 总结
 
-![](C:\Users\MLY\Desktop\Markdown\垃圾回收器总结.png)
+![](\picture\垃圾回收器总结.png)
 
 #### GC日志分析
 
@@ -1179,7 +1179,7 @@ public class StringTableGCTest {
 - `-Xloggc:../logs/gc.log`日志文件输出路径
 - 日志分析工具：GCViewer、GCEasy、GCHisto、GCLogViewer、garbageCat、Hpjmeter。
 
-![](C:\Users\MLY\Desktop\Markdown\GC日志分析.png)
+![](\picture\GC日志分析.png)
 
 ### 其它
 
@@ -1252,11 +1252,11 @@ public class StringTableGCTest {
           //从软引用中获取强引用
           System.out.println(objectSoftReference.get());
           System.gc();
-
+  
           System.out.println("After GC:");
           //系统内存足够，不会回收软引用可达的对象
           System.out.println(objectSoftReference.get());
-
+  
           try {
               //构造系统内存不足场景
               byte[] bytes = new byte[7 * 1024 * 1024];
@@ -1391,7 +1391,7 @@ public class PhantomReferenceTest {
 
 常量池可以看做是一张表，虚拟机指令根据这张常量表找到要执行的类名、方法、参数类型和字面量等类型。
 
-![字节码文件](C:\Users\MLY\Desktop\Markdown\字节码文件.png)
+![字节码文件](\picture\字节码文件.png)
 
 
 
@@ -1456,7 +1456,7 @@ Java堆所占的内存大小
 
   ```
 
-  ​
+  
 
   - `gccapacity`：输出内容与`gc`基本相同，但输出主要关注Java堆各个区域使用到的最大、最小空间。
 
@@ -1466,7 +1466,7 @@ Java堆所占的内存大小
        0.0 786432.0  67584.0    0.0 4096.0  63488.0        0.0   786432.0   184320.0   184320.0      0.0 1071104.0  24064.0      0.0 1048576.0   2816.0      3     0
   ```
 
-  ​
+  
 
   - `gcutil`：内容与`gc`基本相同，但输出主要关注已使用空间占总空间的百分比
 
@@ -1476,7 +1476,7 @@ Java堆所占的内存大小
     0.00 100.00   1.61   2.11  97.47  92.63      3    0.025     0    0.000    0.025
   ```
 
-  ​
+  
 
   - `gccause`：与`gcutil`功能基本相同，但会打印最后一次或正在进行的GC产生的原因
 
@@ -1486,7 +1486,7 @@ Java堆所占的内存大小
     0.00 100.00   3.23   2.11  97.47  92.63      3    0.025     0    0.000    0.025 G1 Evacuation Pause  No GC
   ```
 
-  ​
+  
 
   - `gcnew`
 
@@ -1494,7 +1494,7 @@ Java堆所占的内存大小
 
   ```
 
-  ​
+  
 
   - `gcnewcapacity`
 
@@ -1502,7 +1502,7 @@ Java堆所占的内存大小
 
   ```
 
-  ​
+  
 
   - `gcold`
 
@@ -1510,7 +1510,7 @@ Java堆所占的内存大小
 
   ```
 
-  ​
+  
 
   - `gcoldcapacity`
 
@@ -1518,7 +1518,7 @@ Java堆所占的内存大小
 
   ```
 
-  ​
+  
 
   - `gcpermcapacity`
 
@@ -1526,7 +1526,7 @@ Java堆所占的内存大小
 
   ```
 
-  ​
+  
 
   - `compiler`：显示JIT编译器编译过的方法、耗时等信息。
 
@@ -1536,7 +1536,7 @@ Java堆所占的内存大小
       2562      0       0     2.62          0
   ```
 
-  ​
+  
 
   - `printcompilation`：输出已经被JIT编译的方法
 
@@ -1546,7 +1546,7 @@ Java堆所占的内存大小
       2564     48    1 java/io/ObjectOutputStream$BlockDataOutputStream writeLong
   ```
 
-  ​
+  
 
 - interval
 
@@ -1694,7 +1694,7 @@ C:\Users\MLY>jcmd 82112 GC.heap_info
 
 用于对JVM内存、线程和类等的监控，是一个基于JMX（Java management extensions）的GUI性能监控工具
 
-#### ![](C:\Users\MLY\Desktop\Markdown\picture\jconsole.jpg)
+#### ![](\picture\jconsole.jpg)
 
 #### visualVM
 
@@ -1702,7 +1702,7 @@ C:\Users\MLY>jcmd 82112 GC.heap_info
 
 Visual VM可以独立安装。建议安装Visual GC插件
 
-![](C:\Users\MLY\Desktop\Markdown\picture\jvisualvm连接方式.png)
+![](\picture\jvisualvm连接方式.png)
 
 #### MAT
 

@@ -15,6 +15,6 @@ import org.springframework.stereotype.Component;
 public class Car {
     private String brand;
 
-    private double price;
+    private Double price;
 
 }

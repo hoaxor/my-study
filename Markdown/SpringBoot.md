@@ -523,6 +523,8 @@ public @interface AutoConfigurationPackage {
         }
 
         public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+            // com.hyh.springbootdemo.SpringbootDemoApplication
+            // 
             AutoConfigurationPackages.register(registry, (String[])(new AutoConfigurationPackages.PackageImports(metadata)).getPackageNames().toArray(new String[0]));
         }
 
@@ -553,7 +555,9 @@ public @interface AutoConfigurationPackage {
         }
     }
     protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-        List<String> configurations = SpringFactoriesLoader.loadFactoryNames(this.getSpringFactoriesLoaderFactoryClass(), this.getBeanClassLoader());
+        List<String> configurations = 
+            // 见下
+            SpringFactoriesLoader.loadFactoryNames(this.getSpringFactoriesLoaderFactoryClass(), this.getBeanClassLoader());
         Assert.notEmpty(configurations, "No auto configuration classes found in META-INF/spring.factories. If you are using a custom packaging, make sure that file is correct.");
         return configurations;
     }
@@ -1047,6 +1051,49 @@ springboot 默认禁用了矩阵变量功能
 2.6.7版本默认开启
 
 
+
+### 返回参数处理
+
+#### 返回JSON
+
+需要导入starter-web
+
+```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>        
+		<dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+```
+
+
+
+![image-20220707202410796](\picture\image-20220707202410796.png)
+
+
+
+#### 内容协商
+
+```java
+ContentNegotiationManager
+ParameterContentNegotiationStrategy//基于参数的内容协商
+//开启基于参数的内容协商模式 format=json/x
+//spring.mvc.contentnegotiation.favor-parameter=true
+HeaderContentNegotiationStrategy // 基于请求头的内容协商   
+```
+
+![image-20220707231213774](\picture\image-20220707231213774.png)
 
 REST
 

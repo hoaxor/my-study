@@ -1,9 +1,11 @@
 package com.hyh.springbootdemo.controller;
 
-import org.springframework.stereotype.Controller;
+import com.hyh.springbootdemo.model.Car;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.MatrixVariable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -26,5 +28,11 @@ public class MyController {
         System.out.println(name);
         System.out.println(path);
         return "MatrixVariable";
+    }
+
+    @GetMapping("/car")
+    @ResponseBody
+    public Car car(String brand, double price) {
+        return new Car(brand + "01", price + 10);
     }
 }

@@ -20,11 +20,15 @@ public class MyWebMvcConfigurer {
             @Override
             // 添加自定义转换器
             public void addFormatters(FormatterRegistry registry) {
-                registry.addConverter((Converter<String, Integer>) source -> {
-                    if (StringUtils.isNotEmpty(source)) {
-                        return Integer.valueOf(source);
+                // 使用lambda会异常
+                registry.addConverter(new Converter<String, Integer>() {
+                    @Override
+                    public Integer convert(String source) {
+                        if (StringUtils.isNotEmpty(source)) {
+                            return Integer.valueOf(source);
+                        }
+                        return null;
                     }
-                    return null;
                 });
             }
         };
